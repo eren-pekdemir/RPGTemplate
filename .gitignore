@@ -1,0 +1,17 @@
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+Build/
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+.vs/
+.idea/
+*.sln
+*.suo
+*.VC.db
+*.VC.opendb
+.vscode/
+*.DotSettings.user
+.DS_Store
+Thumbs.db
