@@ -42,4 +42,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void SetInteractionEnabled(bool bNewEnabled);
-}
+};
