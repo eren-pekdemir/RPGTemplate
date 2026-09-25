@@ -7,6 +7,8 @@
 #include "RPGInteractorComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnFocusChangedSignature, UObject*, NewFocus, UObject*, OldFocus);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnHoldStartedSignature,UObject*, Target, float, Duration);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnHoldEndedSignature, UObject*, Target, bool, bCompleted);
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGINTERACTION_API URPGInteractorComponent : public UActorComponent
@@ -17,6 +19,8 @@ public:
 	// Sets default values for this component's properties
 	URPGInteractorComponent();
 	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	UPROPERTY(EditAnywhere, Instanced, Category = "Interaction")
 	TObjectPtr<URPGInteractionDetector> Detector;
 	
@@ -26,11 +30,23 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FRPGOnFocusChangedSignature OnFocusChanged;
 	
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FRPGOnHoldStartedSignature OnHoldStarted;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FRPGOnHoldEndedSignature OnHoldEnded;
+	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void StartInteraction();
 	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void StopInteraction();
+	
+	UFUNCTION(BlueprintPure, Category = "Interaction")
+	float GetHoldProgress() const;
+	
+	UFUNCTION(BlueprintPure, Category = "Interaction")
+	bool IsHolding() const;
 
 protected:
 	// Called when the game starts
@@ -46,4 +62,22 @@ private:
 	void ScanForInteractables();
 	
 	void SetFocus(UObject* NewFocus);
+	
+	TWeakObjectPtr<UObject> HoldTarget;
+	
+	float RequiredHoldDuration = 0.f;
+	
+	float ElapsedHoldTime = 0.f;
+	
+	bool bIsHolding = false;	
+	
+	void StartHold(UObject* Target, float Duration);
+	
+	void CompleteHold();
+	
+	void CancelHold();
+	
+	void EndHold(bool bCompleted);
+	
+	
 };
