@@ -6,9 +6,7 @@
 #include "RPGInteractionDetector.h"
 #include "RPGTraceInteractionDetector.generated.h"
 
-/**
- * 
- */
+
 UCLASS(meta = (DisplayName = "Trace Detector"))
 class RPGINTERACTION_API URPGTraceInteractionDetector : public URPGInteractionDetector
 {

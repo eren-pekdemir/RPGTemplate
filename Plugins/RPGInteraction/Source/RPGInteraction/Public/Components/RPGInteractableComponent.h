@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/RPGInteractable.h"
+#include "RPGInteractionTypes.h"
 #include "RPGInteractableComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnInteractedSignature, AActor*, InteractionInstigator);
+
+
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGINTERACTION_API URPGInteractableComponent : public UActorComponent , public IRPGInteractable
@@ -42,4 +45,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void SetInteractionEnabled(bool bNewEnabled);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ERPGHighlightStyle HighlightStyle = ERPGHighlightStyle::Default;
 };

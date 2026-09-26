@@ -15,6 +15,8 @@ class URPGInteractable : public UInterface
 	GENERATED_BODY()
 };
 
+
+
 class RPGCORE_API IRPGInteractable
 {
 	GENERATED_BODY()
