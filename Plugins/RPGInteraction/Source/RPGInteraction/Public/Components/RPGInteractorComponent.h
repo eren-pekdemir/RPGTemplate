@@ -79,5 +79,7 @@ private:
 	
 	void EndHold(bool bCompleted);
 	
+	void DrawDebugState() const;
+	
 	
 };
