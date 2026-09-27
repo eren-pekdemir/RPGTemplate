@@ -47,6 +47,9 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Interaction")
 	bool IsHolding() const;
+	
+	UFUNCTION(BlueprintPure, Category = "Interaction")
+	UObject* GetFocusedInteractable() const;
 
 protected:
 	// Called when the game starts

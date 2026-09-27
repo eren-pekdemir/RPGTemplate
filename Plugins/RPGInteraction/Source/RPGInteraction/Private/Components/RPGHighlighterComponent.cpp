@@ -4,6 +4,7 @@
 #include "Components/RPGHighlighterComponent.h"
 #include "Components/RPGInteractableComponent.h"
 #include "Components/RPGInteractorComponent.h"
+#include "RPGInteractionLibrary.h"
 
 URPGHighlighterComponent::URPGHighlighterComponent()
 {
@@ -50,7 +51,7 @@ void URPGHighlighterComponent::HandleFocusChanged(UObject* NewFocus, UObject* Ol
 
 void URPGHighlighterComponent::StartHighlight(UObject* Focus)
 {
-	AActor* FocusActor = GetActorFromFocus(Focus);
+	AActor* FocusActor = URPGInteractionLibrary::GetActorFromInteractable(Focus);
 	if (!FocusActor) return;
 	
 	URPGInteractableComponent* FocusInteractableComponent = Cast<URPGInteractableComponent>(Focus);
@@ -81,25 +82,6 @@ void URPGHighlighterComponent::StartHighlight(UObject* Focus)
 		Component->SetCustomDepthStencilValue(static_cast<int32>(HighlightStyle));
 		HighlightedComponents.Add(Component);
 	}
-}
-
-AActor* URPGHighlighterComponent::GetActorFromFocus(UObject* Focus) const
-{
-	if (!Focus) return nullptr;
-	
-	AActor* Actor = Cast<AActor>(Focus);
-	if (Actor)
-	{
-		return Actor;
-	}
-	
-	UActorComponent* FocusComponent = Cast<UActorComponent>(Focus);
-	if (FocusComponent)
-	{
-		return FocusComponent->GetOwner();
-	}
-	
-	return nullptr;
 }
 
 void URPGHighlighterComponent::StopHighlight()

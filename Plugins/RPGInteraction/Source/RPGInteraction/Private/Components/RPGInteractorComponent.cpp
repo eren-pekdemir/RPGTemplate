@@ -166,6 +166,11 @@ bool URPGInteractorComponent::IsHolding() const
 	return bIsHolding;
 }
 
+UObject* URPGInteractorComponent::GetFocusedInteractable() const
+{
+	return FocusedInteractable.Get();
+}
+
 void URPGInteractorComponent::StartHold(UObject* Target, float Duration)
 {
 	HoldTarget = Target;

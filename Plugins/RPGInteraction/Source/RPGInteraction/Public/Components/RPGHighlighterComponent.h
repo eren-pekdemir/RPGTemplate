@@ -33,8 +33,6 @@ protected:
 	void HandleFocusChanged(UObject* NewFocus, UObject* OldFocus);
 	void StartHighlight(UObject* Focus);
 	void StopHighlight();
-	
-	AActor* GetActorFromFocus(UObject* Focus) const;
 
 
 private:
