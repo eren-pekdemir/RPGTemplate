@@ -86,6 +86,7 @@ void URPGInteractorComponent::ScanForInteractables()
 	Pawn->GetController()->GetPlayerViewPoint(Query.ViewLocation, Query.ViewRotation);
 
 	UObject* NewFocus = Detector->FindBestInteractable(Query);
+	Query.CurrentFocus = FocusedInteractable.Get();	
 
 	if (NewFocus != FocusedInteractable.Get())
 	{

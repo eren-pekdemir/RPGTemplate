@@ -32,6 +32,9 @@ struct RPGINTERACTION_API FRPGInteractionQuery
 	 */
 	UPROPERTY(BlueprintReadWrite, Category = "Interaction")
 	float QueryInterval = 0.f;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "Interaction")
+	TObjectPtr<UObject> CurrentFocus = nullptr;
 };
 
 /**
