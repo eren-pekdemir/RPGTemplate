@@ -4,6 +4,8 @@
 
 #include "Modules/ModuleManager.h"
 
+RPGINVENTORY_API DECLARE_LOG_CATEGORY_EXTERN(LogRPGInventory, Log, All);
+
 class FRPGInventoryModule : public IModuleInterface
 {
 public:
