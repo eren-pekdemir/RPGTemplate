@@ -9,6 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnFocusChangedSignature, UObject*, NewFocus, UObject*, OldFocus);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnHoldStartedSignature,UObject*, Target, float, Duration);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnHoldEndedSignature, UObject*, Target, bool, bCompleted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnPromptChangedSignature, const FText&, NewPrompt);
+
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGINTERACTION_API URPGInteractorComponent : public UActorComponent
@@ -36,6 +38,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FRPGOnHoldEndedSignature OnHoldEnded;
 	
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FRPGOnPromptChangedSignature OnPromptChanged;
+	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void StartInteraction();
 	
@@ -50,6 +55,12 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Interaction")
 	UObject* GetFocusedInteractable() const;
+	
+	UFUNCTION(BlueprintPure, Category = "Interaction")
+	const FText GetFocusPrompt()
+	{
+		return CachedPrompt;
+	}
 
 protected:
 	// Called when the game starts
@@ -83,6 +94,8 @@ private:
 	void EndHold(bool bCompleted);
 	
 	void DrawDebugState() const;
+	
+	FText CachedPrompt;
 	
 	
 };

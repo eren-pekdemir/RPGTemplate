@@ -84,13 +84,24 @@ void URPGInteractorComponent::ScanForInteractables()
 	Query.InstigatorActor = Pawn;
 	Query.QueryInterval = ScanInterval; // lets the detector keep its debug shapes until the next scan
 	Pawn->GetController()->GetPlayerViewPoint(Query.ViewLocation, Query.ViewRotation);
-
-	UObject* NewFocus = Detector->FindBestInteractable(Query);
+	
 	Query.CurrentFocus = FocusedInteractable.Get();	
+	UObject* NewFocus = Detector->FindBestInteractable(Query);
+	
 
 	if (NewFocus != FocusedInteractable.Get())
 	{
 		SetFocus(NewFocus);
+	}
+	else if (NewFocus)
+	{
+		FText NewFocusText = IRPGInteractable::Execute_GetInteractionPrompt(NewFocus, GetOwner());
+		
+		if (!NewFocusText.EqualTo(GetFocusPrompt()))
+		{
+			CachedPrompt = NewFocusText;
+			OnPromptChanged.Broadcast(GetFocusPrompt());
+		}
 	}
 
 #if ENABLE_DRAW_DEBUG
@@ -103,6 +114,7 @@ void URPGInteractorComponent::ScanForInteractables()
 
 void URPGInteractorComponent::SetFocus(UObject* NewFocus)
 {
+	
 	if (IsHolding() && NewFocus != HoldTarget.Get())
 	{
 		CancelHold();
@@ -110,6 +122,15 @@ void URPGInteractorComponent::SetFocus(UObject* NewFocus)
 
 	UObject* OldFocus = FocusedInteractable.Get();
 	FocusedInteractable = NewFocus;
+	if (NewFocus)
+	{
+		CachedPrompt = IRPGInteractable::Execute_GetInteractionPrompt(NewFocus,GetOwner());
+	}
+	else
+	{
+		CachedPrompt = FText::GetEmpty();
+	}
+	
 	OnFocusChanged.Broadcast(NewFocus, OldFocus);
 }
 

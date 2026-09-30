@@ -6,6 +6,8 @@
 #include "Items/RPGItemFragment.h"
 #include "RPGInventoryFragment.generated.h"
 
+class URPGItemDefinition;
+
 /**
  * 
  */
@@ -22,7 +24,7 @@ public:
 	bool bCanBeDropped = true;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
-	TSoftObjectPtr<UStaticMesh> Mesh;
+	TSoftObjectPtr<UStaticMesh> WorldMesh;
 	
 	static float GetUnitWeight(const URPGItemDefinition* Item);
 };

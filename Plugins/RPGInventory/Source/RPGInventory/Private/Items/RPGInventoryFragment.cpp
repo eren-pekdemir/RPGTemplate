@@ -7,7 +7,7 @@
 
 float URPGInventoryFragment::GetUnitWeight(const URPGItemDefinition* Item)
 {
-	if (!Item) return 0.0f;
+	if (!Item) return 0.f;
 	
 	const URPGInventoryFragment* ItemFragment = Item->FindFragmentByClass<URPGInventoryFragment>();
 	

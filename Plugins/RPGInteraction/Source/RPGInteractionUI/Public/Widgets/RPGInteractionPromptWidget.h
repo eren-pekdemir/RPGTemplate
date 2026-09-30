@@ -28,6 +28,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Prompt")
 	void BP_OnHoldEnded(bool bCompleted);
 	
+	
+	
 private:
 	TWeakObjectPtr<URPGInteractorComponent> Interactor;
 	TWeakObjectPtr<AActor> TargetActor;
@@ -41,6 +43,9 @@ private:
 	
 	UFUNCTION()
 	void HandleHoldEnded(UObject* Target, bool bCompleted);
+	
+	UFUNCTION()
+	void HandlePromptChanged(const FText& NewPrompt);
 	
 protected:
 	UPROPERTY(meta = (BindWidget))

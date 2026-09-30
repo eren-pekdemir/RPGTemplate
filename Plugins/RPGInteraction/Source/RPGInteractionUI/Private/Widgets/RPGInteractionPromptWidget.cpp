@@ -17,6 +17,7 @@ void URPGInteractionPromptWidget::SetInteractor(URPGInteractorComponent* NewInte
 		Interactor->OnFocusChanged.RemoveDynamic(this, &URPGInteractionPromptWidget::HandleFocusChanged);
 		Interactor->OnHoldStarted.RemoveDynamic(this, &URPGInteractionPromptWidget::HandleHoldStarted);
 		Interactor->OnHoldEnded.RemoveDynamic(this, &URPGInteractionPromptWidget::HandleHoldEnded);
+		Interactor->OnPromptChanged.RemoveDynamic(this, &URPGInteractionPromptWidget::HandlePromptChanged);
 	}
 	
 	Interactor = NewInteractor;
@@ -26,9 +27,15 @@ void URPGInteractionPromptWidget::SetInteractor(URPGInteractorComponent* NewInte
 		Interactor->OnFocusChanged.AddDynamic(this, &URPGInteractionPromptWidget::HandleFocusChanged);
 		Interactor->OnHoldStarted.AddDynamic(this, &URPGInteractionPromptWidget::HandleHoldStarted);
 		Interactor->OnHoldEnded.AddDynamic(this, &URPGInteractionPromptWidget::HandleHoldEnded);
+		Interactor->OnPromptChanged.AddDynamic(this, &URPGInteractionPromptWidget::HandlePromptChanged);
 	}
 	
 	HandleFocusChanged(NewInteractor ? NewInteractor->GetFocusedInteractable() : nullptr, nullptr);
+}
+
+void URPGInteractionPromptWidget::HandlePromptChanged(const FText& NewPrompt)
+{
+	PromptText->SetText(NewPrompt);
 }
 
 void URPGInteractionPromptWidget::NativeConstruct()
@@ -98,7 +105,7 @@ void URPGInteractionPromptWidget::HandleFocusChanged(UObject* NewFocus, UObject*
 		return;
 	}
 
-	PromptText->SetText(IRPGInteractable::Execute_GetInteractionPrompt(NewFocus, (Interactor.Get() ? Interactor->GetOwner() : nullptr)));
+	PromptText->SetText(Interactor.IsValid() ? Interactor->GetFocusPrompt() : FText::GetEmpty());
 	
 	FVector BoundsOrigin;
 	FVector BoundsExtent;
