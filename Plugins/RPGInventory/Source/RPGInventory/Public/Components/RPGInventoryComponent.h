@@ -8,6 +8,7 @@
 #include "RPGInventoryTypes.h"
 #include "RPGInventoryComponent.generated.h"
 
+class ARPGItemPickup;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemAddedSignature, const FRPGItemEntry&, Entry, int32, AddedQuantity);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemRemovedSignature, const FRPGItemEntry&, Entry, int32, RemovedQuantity);
@@ -72,6 +73,15 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	bool IsOverweight() const;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory|Drop")
+	TSubclassOf<ARPGItemPickup> PickupClass;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory|Drop", meta = (Units = "cm", ClampMin = 0))
+	float DropDistance = 100.f;
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Drop")
+	int32 DropEntry(FGuid EntryId, int32 Quantity);
 
 protected:
 	// Called when the game starts

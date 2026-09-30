@@ -6,6 +6,7 @@
 #include "Items/RPGInventoryFragment.h"
 #include "Items/RPGItemDefinition.h"
 #include "RPGInventory.h"
+#include "Actors/RPGItemPickup.h"
 
 namespace
 {
@@ -22,6 +23,7 @@ URPGInventoryComponent::URPGInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
+
 
 // Called when the game starts
 void URPGInventoryComponent::BeginPlay()
@@ -286,4 +288,37 @@ void URPGInventoryComponent::RecalculateWeight()
 	}
 }
 
+int32 URPGInventoryComponent::DropEntry(FGuid EntryId, int32 Quantity)
+{
+	if (Quantity <= 0) return 0;
+	int32 EntryIndex = FindEntryIndex(EntryId);
+	if (EntryIndex == INDEX_NONE) return 0;
+	
+	FRPGItemEntry Entry = Entries[EntryIndex];
+	int32 ToDrop = FMath::Min(Quantity, Entry.Quantity);
+	
+	const URPGInventoryFragment* ItemFragment = Entry.Item->FindFragmentByClass<URPGInventoryFragment>();
+	if (!ItemFragment || !ItemFragment->bCanBeDropped) return 0;
+	
+	if (!PickupClass)
+	{
+		UE_LOG(LogTemp,Warning, TEXT("Pickup Class is null"));
+		return 0;
+	}
+	
+	if (!GetOwner()) return 0;
+	
+	FTransform DropTransform = FTransform::Identity; 
+	DropTransform.SetLocation(GetOwner()->GetActorLocation() + (GetOwner()->GetActorForwardVector() * DropDistance));
+	
+	ARPGItemPickup* Pickup = GetWorld()->SpawnActorDeferred<ARPGItemPickup>(PickupClass, DropTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+	if (!Pickup) return 0;
+	Pickup->Item = Entry.Item;
+	Pickup->Quantity = ToDrop;
+	Pickup->FinishSpawning(DropTransform);
+	
+	int32 Removed = RemoveEntry(EntryId, ToDrop);
+	
+	return Removed;
+}
 
