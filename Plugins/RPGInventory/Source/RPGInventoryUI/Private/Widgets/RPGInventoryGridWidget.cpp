@@ -6,6 +6,7 @@
 #include "Components/RPGInventoryComponent.h"
 #include "Widgets/RPGInventorySlotWidget.h"
 #include "Components/UniformGridPanel.h"
+#include "Items/RPGItemDefinition.h"
 
 void URPGInventoryGridWidget::SetInventory(URPGInventoryComponent* NewInventory)
 {
@@ -26,6 +27,20 @@ void URPGInventoryGridWidget::SetInventory(URPGInventoryComponent* NewInventory)
 	}
 	
 	Refresh();
+}
+
+void URPGInventoryGridWidget::SetFilter(FGameplayTag NewFilter)
+{
+	if (NewFilter != FilterTag)
+	{
+		FilterTag = NewFilter;
+		Refresh();
+	}
+}
+
+FGameplayTag URPGInventoryGridWidget::GetFilter() const
+{
+	return FilterTag;
 }
 
 void URPGInventoryGridWidget::NativeDestruct()
@@ -69,13 +84,21 @@ void URPGInventoryGridWidget::Refresh()
 		BuildSlots();
 	}
 	
-	TArray<FRPGItemEntry> Entries = Inventory->GetEntries();
+	TArray<FRPGItemEntry> VisibleEntries;
+	
+	for (const FRPGItemEntry& Entry : Inventory->GetEntries())
+	{
+		if (!FilterTag.IsValid() || Entry.Item->ItemType.MatchesTag(FilterTag))
+		{
+			VisibleEntries.Add(Entry);
+		}
+	}
 	
 	for (int32 i = 0; i < SlotWidgets.Num(); i++)
 	{
-		if (Entries.IsValidIndex(i))
+		if (VisibleEntries.IsValidIndex(i))
 		{
-			SlotWidgets[i]->SetEntry(Entries[i]);
+			SlotWidgets[i]->SetEntry(VisibleEntries[i]);
 		}
 		else
 		{

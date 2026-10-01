@@ -29,6 +29,12 @@ void URPGInventoryScreenWidget::SetInventory(URPGInventoryComponent* NewInventor
 				 Inventory.IsValid() ? Inventory->MaxWeight : 0.f);
 }
 
+void URPGInventoryScreenWidget::SetFilter(FGameplayTag NewFilter)
+{
+	InventoryGrid->SetFilter(NewFilter);
+	BP_OnFilterChanged(InventoryGrid->GetFilter());
+}
+
 void URPGInventoryScreenWidget::NativeDestruct()
 {
 	if (WeightBar && WeightText)

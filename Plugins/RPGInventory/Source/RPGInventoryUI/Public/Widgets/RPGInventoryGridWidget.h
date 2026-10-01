@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "RPGInventoryTypes.h"                   
+#include "GameplayTagContainer.h"
 #include "RPGInventoryGridWidget.generated.h"
 
 class UUniformGridPanel;
@@ -17,6 +18,12 @@ class RPGINVENTORYUI_API URPGInventoryGridWidget : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Grid")
 	void SetInventory(URPGInventoryComponent* NewInventory);
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Grid")
+	void SetFilter(FGameplayTag NewFilter);
+	
+	UFUNCTION(BlueprintPure)
+	FGameplayTag GetFilter() const ; 
 
 protected:                                      
 	UPROPERTY(meta = (BindWidget))
@@ -50,4 +57,6 @@ private:
 	
 	UFUNCTION()
 	void HandleSlotRightClicked(URPGInventorySlotWidget* SlotWidget, bool bWholeStack);
+	
+	FGameplayTag FilterTag;
 };

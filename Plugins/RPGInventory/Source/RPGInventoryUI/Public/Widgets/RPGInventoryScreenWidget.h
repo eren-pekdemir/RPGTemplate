@@ -37,8 +37,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor OverweightColor;
 	
+	UFUNCTION(BlueprintCallable)
+	void SetFilter(FGameplayTag NewFilter);
 	
-	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnFilterChanged(FGameplayTag NewFilter);
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<URPGInventoryGridWidget> InventoryGrid;
