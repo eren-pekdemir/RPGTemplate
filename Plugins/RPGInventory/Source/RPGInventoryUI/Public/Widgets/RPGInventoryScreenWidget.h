@@ -10,6 +10,9 @@ class URPGInventoryGridWidget;
 class URPGInventoryComponent;
 class URPGInventoryScreenWidget;
 
+class UTextBlock;
+class UProgressBar;
+
 
 /**
  * 
@@ -28,9 +31,34 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnClosed();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor NormalColor;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor OverweightColor;
+	
+	
+	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<URPGInventoryGridWidget> InventoryGrid;
+	
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UProgressBar> WeightBar;
+	
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> WeightText;
+	
+	virtual void NativeDestruct() override;
+	
+private:
+	
+	TWeakObjectPtr<URPGInventoryComponent> Inventory;
+	
+	UFUNCTION()
+	void HandleWeightChanged(float NewWeight, float  MaxWeight);
+	
+	void UpdateWeight(float Current, float Max);
 	
 	
 };
