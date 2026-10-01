@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core and Interaction are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction and Inventory are complete; the remaining systems are planned below.
 
 ---
 
@@ -16,7 +16,7 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 |---|---|---|
 | Core (tags, interfaces, item data model) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
-| Inventory | `RPGInventory` | ⏳ |
+| **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
 | Equipment | `RPGEquipment` | ⏳ |
 | Abilities & Stats (GAS) | `RPGAbilities` | ⏳ |
 | Progression (XP, level, skill tree) | `RPGProgression` | ⏳ |
@@ -36,16 +36,18 @@ graph BT
     Core["RPGCore<br/><i>tags · interfaces · item data model</i>"]
     Interaction["RPGInteraction"]
     InteractionUI["RPGInteractionUI"]
-    Inventory["RPGInventory (planned)"]
+    Inventory["RPGInventory"]
+    InventoryUI["RPGInventoryUI"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
     Interaction --> Core
     InteractionUI --> Interaction
     Inventory --> Core
+    InventoryUI --> Inventory
     Other --> Core
     Game --> InteractionUI
-    Game --> Inventory
+    Game --> InventoryUI
     Game --> Other
 ```
 
@@ -136,6 +138,35 @@ the Interactable only broadcasts `OnInteracted`, and the highlighter and prompt 
 
 No C++ required. Custom behaviour (e.g. a prompt that changes between "Open" / "Close") can implement the
 `RPGInteractable` interface directly on the actor instead.
+
+---
+
+## Inventory System
+
+A slot- and weight-limited inventory with stacking, world pickups, dropping, and a Witcher-style grid UI.
+The logic is list-based; the grid exists only in the UI.
+
+📖 **Full documentation:** [`docs/systems/Inventory.md`](docs/systems/Inventory.md)
+
+### Features
+
+- **Stacking** with per-item `MaxStackSize`, partial adds ("10 of 12 arrows fit")
+- **Slot limit + optional weight limit** (one checkbox to turn weight off, optional overweight mode)
+- **Data-driven items:** `RPGItemDefinition` data assets + an inventory fragment (weight, world mesh, droppable)
+- **World pickups** that show a live prompt (`Pick up Arrow x12` / `Inventory Full`) and keep the remainder
+- **Dropping** that can never lose items (spawn first, then remove)
+- **Grid UI:** reusable slots, stack counts, hover highlight, tooltips, weight bar,
+  **right-click drop / Shift = whole stack**, and **category tabs** driven by hierarchical Gameplay Tags
+- **No coupling to Interaction:** the pickup implements the RPGCore interface; the game layer wires
+  "hide prompts while the menu is open"
+
+### Quick start
+
+1. **Pawn** → add **`RPG Inventory`** (slots, weight, starting items, `Pickup Class`).
+2. **Item** → Data Asset of `RPGItemDefinition` + **`RPG Inventory Fragment`** (weight, world mesh).
+3. **World** → `BP_ItemPickup` (from `RPGItemPickup`) with the `Interactable` collision preset; set `Item` / `Quantity`.
+4. **UI** → Widget Blueprints from the four `RPGInventoryUI` bases, then **`RPG Inventory UI`** on the
+   PlayerController and an input action → `Toggle Inventory`.
 
 ---
 
