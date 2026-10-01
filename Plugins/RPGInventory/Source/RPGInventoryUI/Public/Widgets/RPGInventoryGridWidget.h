@@ -47,4 +47,7 @@ private:
 
 	UFUNCTION()
 	void OnInventoryRefreshedHandler();
+	
+	UFUNCTION()
+	void HandleSlotRightClicked(URPGInventorySlotWidget* SlotWidget, bool bWholeStack);
 };

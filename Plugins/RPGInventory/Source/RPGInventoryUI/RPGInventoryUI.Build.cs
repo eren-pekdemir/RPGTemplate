@@ -24,7 +24,8 @@ public class RPGInventoryUI : ModuleRules
             {
                 
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "InputCore"
             }
         );
     }

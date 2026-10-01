@@ -6,7 +6,8 @@
 #include "Components/TextBlock.h"
 #include "Engine/Texture2D.h"
 #include "Items/RPGItemDefinition.h"
-
+#include "InputCoreTypes.h"
+#include "Widgets/RPGItemTooltipWidget.h"
 
 void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
 {
@@ -34,8 +35,22 @@ void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
 		}
 	}
 	
-	
 	BP_OnSlotUpdated(false);
+	
+	if(ItemTooltipClass && !ItemTooltip)
+	{
+		ItemTooltip = CreateWidget<URPGItemTooltipWidget>(this, ItemTooltipClass);
+	}
+
+	if (ItemTooltip)
+	{
+		ItemTooltip->SetItem(Entry);
+
+		if (GetToolTip() != ItemTooltip)
+		{
+			SetToolTip(ItemTooltip);
+		}
+	}
 }
 
 void URPGInventorySlotWidget::ClearSlot()
@@ -49,6 +64,8 @@ void URPGInventorySlotWidget::ClearSlot()
 	}
 	
 	BP_OnSlotUpdated(true);
+	
+	SetToolTip(nullptr);
 }
 
 FGuid URPGInventorySlotWidget::GetEntryId() const
@@ -59,4 +76,30 @@ FGuid URPGInventorySlotWidget::GetEntryId() const
 bool URPGInventorySlotWidget::IsEmpty() const
 {
 	return !EntryId.IsValid();
+}
+
+FReply URPGInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		OnRightClicked.Broadcast(this, InMouseEvent.IsShiftDown());
+		return FReply::Handled();
+	}
+	
+	
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+void URPGInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	
+	BP_OnHoverChanged(true);
+}
+
+void URPGInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+	
+	BP_OnHoverChanged(false);
 }

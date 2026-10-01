@@ -9,11 +9,14 @@
 
 class UImage;
 class UTextBlock;
+class URPGItemTooltipWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnSlotRightClickedSignature, URPGInventorySlotWidget*, SlotWidget, bool, bWholeStack);
 
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS(Abstract)	
 class RPGINVENTORYUI_API URPGInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -34,6 +37,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory|Slot")
 	void BP_OnSlotUpdated(bool bIsEmpty);
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnHoverChanged(bool bHovered);
+	
+	UPROPERTY(BlueprintAssignable)
+	FRPGOnSlotRightClickedSignature OnRightClicked;
+	
 protected:
 	
 	UPROPERTY(meta = (BindWidget))
@@ -42,7 +51,19 @@ protected:
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> QuantityText;
 	
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URPGItemTooltipWidget> ItemTooltipClass;
+	
+	
+	
 private:
 	
 	FGuid EntryId;
+	
+	UPROPERTY()
+	TObjectPtr<URPGItemTooltipWidget> ItemTooltip;
 };

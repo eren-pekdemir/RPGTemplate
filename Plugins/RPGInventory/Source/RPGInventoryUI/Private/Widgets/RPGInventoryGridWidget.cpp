@@ -49,6 +49,7 @@ void URPGInventoryGridWidget::BuildSlots()
 		int32 RowIndex = i / Columns;
 		SlotGrid->AddChildToUniformGrid(NewSlot,RowIndex,ColumnIndex );
 		SlotWidgets.Add(NewSlot);
+		NewSlot->OnRightClicked.AddDynamic(this, &ThisClass::HandleSlotRightClicked);
 	}
 }
 
@@ -96,4 +97,24 @@ void URPGInventoryGridWidget::OnItemRemovedHandler(const FRPGItemEntry& Entry, i
 void URPGInventoryGridWidget::OnInventoryRefreshedHandler()
 {
 	Refresh();
+}
+
+void URPGInventoryGridWidget::HandleSlotRightClicked(URPGInventorySlotWidget* SlotWidget, bool bWholeStack)
+{
+	if (!Inventory.IsValid() || !SlotWidget) return;
+	
+	FGuid EntryId = SlotWidget->GetEntryId();
+	FRPGItemEntry FoundEntry;
+	
+	if (bWholeStack)
+	{
+		if (Inventory->FindEntry(EntryId, FoundEntry))
+		{
+			Inventory->DropEntry(EntryId,FoundEntry.Quantity);
+		}
+	}
+	else
+	{	
+		Inventory->DropEntry(EntryId, 1);
+	}
 }
