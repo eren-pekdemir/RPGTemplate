@@ -33,6 +33,27 @@ void URPGInteractionPromptWidget::SetInteractor(URPGInteractorComponent* NewInte
 	HandleFocusChanged(NewInteractor ? NewInteractor->GetFocusedInteractable() : nullptr, nullptr);
 }
 
+void URPGInteractionPromptWidget::SetSuppressed(bool bInSuppressed)
+{
+	if (bSuppressed == bInSuppressed)
+	{
+		return;
+	}
+
+	bSuppressed = bInSuppressed;
+
+	if (bSuppressed)
+	{
+		TargetActor.Reset();
+		SetVisibility(ESlateVisibility::Collapsed);
+		BP_OnPromptHidden();
+	}
+	else
+	{
+		HandleFocusChanged(Interactor.IsValid() ? Interactor->GetFocusedInteractable() : nullptr, nullptr);
+	}
+}
+
 void URPGInteractionPromptWidget::HandlePromptChanged(const FText& NewPrompt)
 {
 	PromptText->SetText(NewPrompt);
@@ -88,6 +109,14 @@ void URPGInteractionPromptWidget::NativeTick(const FGeometry& Geometry, float In
 
 void URPGInteractionPromptWidget::HandleFocusChanged(UObject* NewFocus, UObject* OldFocus)
 {
+	
+	if (bSuppressed)
+	{
+		TargetActor.Reset();
+		SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
+	
 	if (NewFocus == nullptr)
 	{
 		TargetActor.Reset();

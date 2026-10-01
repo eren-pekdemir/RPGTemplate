@@ -28,7 +28,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Prompt")
 	void BP_OnHoldEnded(bool bCompleted);
 	
-	
+	void SetSuppressed(bool bInSuppressed);
 	
 private:
 	TWeakObjectPtr<URPGInteractorComponent> Interactor;
@@ -46,6 +46,8 @@ private:
 	
 	UFUNCTION()
 	void HandlePromptChanged(const FText& NewPrompt);
+	
+	bool bSuppressed = false;
 	
 protected:
 	UPROPERTY(meta = (BindWidget))

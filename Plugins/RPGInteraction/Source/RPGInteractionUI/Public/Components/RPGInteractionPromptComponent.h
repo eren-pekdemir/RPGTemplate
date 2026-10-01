@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Prompt")
 	int32 ZOrder = 0;
 
+	UFUNCTION(BlueprintCallable, Category = "Interaction|UI")
+	void SetPromptSuppressed(bool bSuppressed);
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

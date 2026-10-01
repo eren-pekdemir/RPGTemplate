@@ -40,6 +40,17 @@ EDataValidationResult URPGItemDefinition::IsDataValid(FDataValidationContext& Co
 {
 	EDataValidationResult Result = Super::IsDataValid(Context);
 	bool bHasErrors = false;
+	
+	if (Icon.IsNull())
+	{
+		Context.AddError(LOCTEXT("EmptyIcon", "Icon is empty."));
+		bHasErrors = true;
+	}
+	if (MaxStackSize < 1)
+	{
+		Context.AddError(LOCTEXT("MaxStackSize < 0 ", "MaxStack size is zero."));
+		bHasErrors = true;
+	}
 
 	if (DisplayName.IsEmpty())
 	{

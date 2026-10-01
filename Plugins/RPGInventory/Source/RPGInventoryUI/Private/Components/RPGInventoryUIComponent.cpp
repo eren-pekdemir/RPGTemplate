@@ -79,6 +79,7 @@ void URPGInventoryUIComponent::OpenInventory()
 	PC->SetIgnoreMoveInput(true);
 	bIsOpen = true;
 	ScreenWidget->BP_OnOpened();
+	OnInventoryToggled.Broadcast(true);
 }
 
 void URPGInventoryUIComponent::CloseInventory()
@@ -91,6 +92,7 @@ void URPGInventoryUIComponent::CloseInventory()
 	PC->SetIgnoreMoveInput(false);
 	bIsOpen = false;
 	ScreenWidget->BP_OnClosed();
+	OnInventoryToggled.Broadcast(false);
 }
 
 bool URPGInventoryUIComponent::IsInventoryOpen() const

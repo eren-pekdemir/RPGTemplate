@@ -11,6 +11,8 @@ class UUserWidget;
 class APlayerController;
 class APawn;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnInventoryToggledSignature, bool, bIsOpen);
+
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGINVENTORYUI_API URPGInventoryUIComponent : public UActorComponent
 {
@@ -34,6 +36,9 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Inventory|UI")
 	bool IsInventoryOpen() const;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|UI")
+	FRPGOnInventoryToggledSignature OnInventoryToggled;
 
 private:
 	UPROPERTY()

@@ -68,3 +68,10 @@ void URPGInteractionPromptComponent::HandlePossessedPawnChanged(APawn* OldPawn, 
 	PromptWidget->SetInteractor(NewInteractor);
 }
 
+void URPGInteractionPromptComponent::SetPromptSuppressed(bool bSuppressed)
+{
+	if (PromptWidget)
+	{
+		PromptWidget->SetSuppressed(bSuppressed);
+	}
+}
