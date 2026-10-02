@@ -29,6 +29,7 @@ namespace RPGTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Slot_MainHand,  "Equipment.Slot.MainHand",  "Main hand slot");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Slot_OffHand,   "Equipment.Slot.OffHand",   "Off hand slot");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Slot_Accessory, "Equipment.Slot.Accessory", "Accessory slot (ring, amulet)");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment_Slot_Hands,     "Equipment.Slot.Hands",     "Hands slot");
 
 	// ---------- Stat ----------
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat,              "Stat",              "Root: character stat");
