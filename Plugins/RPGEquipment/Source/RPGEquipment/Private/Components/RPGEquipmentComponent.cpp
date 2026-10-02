@@ -170,3 +170,44 @@ ERPGEquipResult URPGEquipmentComponent::EquipFromContainer(const URPGItemDefinit
 	return ERPGEquipResult::Success;
 }
 
+float URPGEquipmentComponent::GetStatModifier(FGameplayTag Stat) const
+{
+	float Count = 0.f;
+	
+	for (const TPair<FGameplayTag, TObjectPtr<const URPGItemDefinition>>& Slot : EquippedItems)
+	{
+		if (!Slot.Value) continue;
+		const URPGEquipmentFragment* Fragment = Slot.Value->FindFragmentByClass<URPGEquipmentFragment>();
+		if (!Fragment) continue;
+		
+		for (const FRPGStatModifier& Modifier : Fragment->Modifiers)
+		{
+			if (Modifier.Stat.MatchesTagExact(Stat))
+			{
+				Count += Modifier.Value;
+			}
+		}
+	}
+	return Count;
+}
+
+TMap<FGameplayTag, float> URPGEquipmentComponent::GetAllStatModifiers() const
+{
+	TMap<FGameplayTag, float> Result;
+
+	for (const TPair<FGameplayTag, TObjectPtr<const URPGItemDefinition>>& Pair : EquippedItems)
+	{
+		if (!Pair.Value) continue;
+
+		const URPGEquipmentFragment* Fragment = Pair.Value->FindFragmentByClass<URPGEquipmentFragment>();
+		if (!Fragment) continue;
+
+		for (const FRPGStatModifier& Modifier : Fragment->Modifiers)
+		{
+			Result.FindOrAdd(Modifier.Stat) += Modifier.Value;
+		}
+	}
+
+	return Result;
+}
+

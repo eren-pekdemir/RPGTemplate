@@ -7,10 +7,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Stats/RPGStatModifier.h"
 #include "RPGItemFragment.generated.h"
 
 UCLASS(Abstract, DefaultToInstanced, EditInlineNew, BlueprintType, Blueprintable)
 class RPGCORE_API URPGItemFragment : public UObject
 {
 	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equipment|Stats", meta = (TitleProperty = "Stat"))
+	TArray<FRPGStatModifier> Modifiers;
 };

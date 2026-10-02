@@ -54,6 +54,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	ERPGEquipResult EquipFromContainer(const URPGItemDefinition* Item);
+	
+	UFUNCTION(BlueprintPure, Category = "Equipment|Stats")
+	float GetStatModifier(FGameplayTag Stat) const;
+
+	UFUNCTION(BlueprintPure, Category = "Equipment|Stats")
+	TMap<FGameplayTag, float> GetAllStatModifiers() const;
 
 protected:
 	// Called when the game starts

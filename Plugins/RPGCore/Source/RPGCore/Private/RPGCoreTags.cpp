@@ -35,6 +35,8 @@ namespace RPGTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat,              "Stat",              "Root: character stat");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Health,       "Stat.Health",       "Health");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Mana,         "Stat.Mana",         "Mana");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Damage,       "Stat.Damage",       "Damage");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Armor,         "Stat.Armor",         "Armor");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Stamina,      "Stat.Stamina",      "Stamina");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Strength,     "Stat.Strength",     "Strength");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Dexterity,    "Stat.Dexterity",    "Dexterity");
