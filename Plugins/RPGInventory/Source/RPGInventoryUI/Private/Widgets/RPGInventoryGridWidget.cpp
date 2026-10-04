@@ -65,6 +65,7 @@ void URPGInventoryGridWidget::BuildSlots()
 		SlotGrid->AddChildToUniformGrid(NewSlot,RowIndex,ColumnIndex );
 		SlotWidgets.Add(NewSlot);
 		NewSlot->OnRightClicked.AddDynamic(this, &ThisClass::HandleSlotRightClicked);
+		NewSlot->OnDoubleClicked.AddDynamic(this, &ThisClass::HandleSlotDoubleClicked);
 	}
 }
 
@@ -140,4 +141,18 @@ void URPGInventoryGridWidget::HandleSlotRightClicked(URPGInventorySlotWidget* Sl
 	{	
 		Inventory->DropEntry(EntryId, 1);
 	}
+}
+
+void URPGInventoryGridWidget::HandleSlotDoubleClicked(URPGInventorySlotWidget* SlotWidget)
+{
+	if (!SlotWidget) return;
+	if (!Inventory.IsValid()) return;
+	
+	FGuid EntryId = SlotWidget->GetEntryId();
+	FRPGItemEntry FoundEntry;
+	
+	if (!Inventory->FindEntry(EntryId, FoundEntry)) return;
+		
+	OnEntryActivated.Broadcast(FoundEntry);
+	
 }

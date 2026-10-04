@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RPGInventoryGridWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "RPGInventoryScreenWidget.generated.h"
 
@@ -42,6 +43,9 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnFilterChanged(FGameplayTag NewFilter);
+	
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|Screen")
+	FRPGOnEntryActivatedSignature OnEntryActivated; 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<URPGInventoryGridWidget> InventoryGrid;
@@ -54,6 +58,8 @@ protected:
 	
 	virtual void NativeDestruct() override;
 	
+	virtual void NativeOnInitialized() override;
+	
 private:
 	
 	TWeakObjectPtr<URPGInventoryComponent> Inventory;
@@ -63,5 +69,6 @@ private:
 	
 	void UpdateWeight(float Current, float Max);
 	
-	
+	UFUNCTION()
+	void HandleEntryActivated(const FRPGItemEntry& Entry);
 };

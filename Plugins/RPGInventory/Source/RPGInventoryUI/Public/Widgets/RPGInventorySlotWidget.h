@@ -12,6 +12,7 @@ class UTextBlock;
 class URPGItemTooltipWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnSlotRightClickedSignature, URPGInventorySlotWidget*, SlotWidget, bool, bWholeStack);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnSlotDoubleClickedSignature, URPGInventorySlotWidget*, SlotWidget);
 
 /**
  * 
@@ -21,6 +22,9 @@ class RPGINVENTORYUI_API URPGInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|Slot")
+	FRPGOnSlotDoubleClickedSignature OnDoubleClicked;
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Slot")
 	void SetEntry(const FRPGItemEntry& Entry);
@@ -58,8 +62,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URPGItemTooltipWidget> ItemTooltipClass;
 	
-	
-	
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 private:
 	
 	FGuid EntryId;

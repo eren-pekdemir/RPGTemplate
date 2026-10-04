@@ -48,6 +48,13 @@ void URPGInventoryScreenWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+void URPGInventoryScreenWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	
+	InventoryGrid->OnEntryActivated.AddDynamic(this, &URPGInventoryScreenWidget::HandleEntryActivated);
+}
+
 void URPGInventoryScreenWidget::HandleWeightChanged(float NewWeight, float MaxWeight)
 {
 	UpdateWeight(NewWeight, MaxWeight);
@@ -92,6 +99,11 @@ void URPGInventoryScreenWidget::UpdateWeight(float Current, float Max)
 		FText::AsNumber(Current, &Options),
 		FText::AsNumber(Max, &Options)));
 	
+}
+
+void URPGInventoryScreenWidget::HandleEntryActivated(const FRPGItemEntry& Entry)
+{
+	OnEntryActivated.Broadcast(Entry);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -94,7 +94,6 @@ private:
 	
 	float CurrentWeight = 0.f;
 	
-
 	void RecalculateWeight();
 	
 	int32 ComputeAddableQuantity(const URPGItemDefinition* Item, int32 Quantity) const;

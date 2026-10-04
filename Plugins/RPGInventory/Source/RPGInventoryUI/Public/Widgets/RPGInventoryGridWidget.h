@@ -10,12 +10,18 @@ class UUniformGridPanel;
 class URPGInventorySlotWidget;
 class URPGInventoryComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnEntryActivatedSignature, const FRPGItemEntry&, Entry);
+
 UCLASS(Abstract)
 class RPGINVENTORYUI_API URPGInventoryGridWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
+	
+	UPROPERTY(BlueprintAssignable, Category = "Inventory|Grid")
+	FRPGOnEntryActivatedSignature OnEntryActivated;
+	
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Grid")
 	void SetInventory(URPGInventoryComponent* NewInventory);
 	
@@ -57,6 +63,9 @@ private:
 	
 	UFUNCTION()
 	void HandleSlotRightClicked(URPGInventorySlotWidget* SlotWidget, bool bWholeStack);
+	
+	UFUNCTION()
+	void HandleSlotDoubleClicked(URPGInventorySlotWidget* SlotWidget);
 	
 	FGameplayTag FilterTag;
 };

@@ -86,7 +86,6 @@ FReply URPGInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeome
 		return FReply::Handled();
 	}
 	
-	
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -102,4 +101,21 @@ void URPGInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEve
 	Super::NativeOnMouseLeave(InMouseEvent);
 	
 	BP_OnHoverChanged(false);
+}
+
+FReply URPGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry,
+	const FPointerEvent& InMouseEvent)
+{
+	FKey Key = InMouseEvent.GetEffectingButton();
+	if (Key == EKeys::LeftMouseButton)
+	{
+		OnDoubleClicked.Broadcast(this);
+		return FReply::Handled();
+	}
+	if (Key == EKeys::RightMouseButton)
+	{
+		return NativeOnMouseButtonDown(InGeometry, InMouseEvent);	
+	}
+	
+	return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
 }
