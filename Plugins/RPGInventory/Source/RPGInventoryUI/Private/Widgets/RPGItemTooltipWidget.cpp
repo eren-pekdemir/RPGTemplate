@@ -11,15 +11,20 @@
 
 void URPGItemTooltipWidget::SetItem(const FRPGItemEntry& Entry)
 {
-	if (!Entry.IsValid()) return;
+	Execute_SetTooltipItem(this, Entry.Item,Entry.Quantity);
+}
+
+void URPGItemTooltipWidget::SetTooltipItem_Implementation(const URPGItemDefinition* Item, int32 Quantity)
+{
+	if (!Item) return;
 	
-	NameText->SetText(Entry.Item->DisplayName);
+	NameText->SetText(Item->DisplayName);
 	
 	if (DescriptionText)
 	{
-		if (!Entry.Item->Description.IsEmpty())
+		if (!Item->Description.IsEmpty())
 		{
-			DescriptionText->SetText(Entry.Item->Description);
+			DescriptionText->SetText(Item->Description);
 			DescriptionText->SetVisibility(ESlateVisibility::HitTestInvisible);
 		}
 		else
@@ -30,7 +35,7 @@ void URPGItemTooltipWidget::SetItem(const FRPGItemEntry& Entry)
 	
 	if (WeightText)
 	{
-		const float TotalWeight = URPGInventoryFragment::GetUnitWeight(Entry.Item) * Entry.Quantity;
+		const float TotalWeight = URPGInventoryFragment::GetUnitWeight(Item) * Quantity;
 
 		if (TotalWeight > 0.f)
 		{
@@ -48,6 +53,6 @@ void URPGItemTooltipWidget::SetItem(const FRPGItemEntry& Entry)
 		}
 	}
 	
-	BP_OnItemSet(Entry.Item);
+	BP_OnItemSet(Item);
 }
 #undef LOCTEXT_NAMESPACE

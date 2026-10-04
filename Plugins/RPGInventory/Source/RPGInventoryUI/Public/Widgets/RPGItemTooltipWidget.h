@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "RPGInventoryTypes.h"
+#include "Items/RPGItemTooltip.h"
 #include "RPGItemTooltipWidget.generated.h"
 
 class UTextBlock;
@@ -14,7 +15,7 @@ class URPGItemDefinition;
  * 
  */
 UCLASS(Abstract)
-class RPGINVENTORYUI_API URPGItemTooltipWidget : public UUserWidget
+class RPGINVENTORYUI_API URPGItemTooltipWidget : public UUserWidget, public IRPGItemTooltip
 {
 	GENERATED_BODY()
 public:
@@ -24,6 +25,8 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory|Tooltip")
 	void BP_OnItemSet(const URPGItemDefinition* Item);
+	
+	virtual void SetTooltipItem_Implementation(const URPGItemDefinition* Item, int32 Quantity) override;
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> NameText;

@@ -47,8 +47,14 @@ protected:
 	
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	
+	UPROPERTY(EditAnywhere, Category = "Equipment|Tooltip", meta = (MustImplement = "/Script/RPGCore.RPGItemTooltip"))
+	TSubclassOf<UUserWidget> ItemTooltipClass;
+	
 private:
 	
 	UPROPERTY()
 	TObjectPtr<const URPGItemDefinition> Item;
+	
+	UPROPERTY()
+	TObjectPtr<UUserWidget> ItemTooltip;
 };
