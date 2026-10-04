@@ -174,6 +174,8 @@ graph LR
     Screen -- "OnWeightChanged" --> Inv
     Slot -- "OnRightClicked" --> Grid
     Grid -- "DropEntry" --> Inv
+    Slot -- "OnDoubleClicked" --> Grid
+    Grid -- "OnEntryActivated" --> Screen
 ```
 
 All widgets are abstract C++ bases; designers build the look in Widget Blueprints derived from them.
@@ -182,8 +184,8 @@ All widgets are abstract C++ bases; designers build the look in Widget Blueprint
 |---|---|---|---|
 | `URPGInventorySlotWidget` | `IconImage` | `QuantityText` | `BP_OnSlotUpdated(bIsEmpty)`, `BP_OnHoverChanged(bHovered)` |
 | `URPGInventoryGridWidget` | `SlotGrid` (Uniform Grid Panel) | — | — |
-| `URPGInventoryScreenWidget` | `InventoryGrid` | `WeightBar`, `WeightText` | `BP_OnOpened`, `BP_OnClosed`, `BP_OnFilterChanged(Tag)` |
-| `URPGItemTooltipWidget` | `NameText` | `DescriptionText`, `WeightText` | `BP_OnItemSet(Item)` (e.g. rarity colour) |
+| `URPGInventoryScreenWidget` | `InventoryGrid` | `WeightBar`, `WeightText` | `BP_OnOpened`, `BP_OnClosed`, `BP_OnFilterChanged(Tag)`, `OnEntryActivated(Entry)` |
+| `URPGItemTooltipWidget` | `NameText` | `DescriptionText`, `WeightText` | `BP_OnItemSet(Item)` (e.g. rarity colour); implements `IRPGItemTooltip` |
 
 Optional widgets may be left out of the WBP; the code checks for them and simply skips that feature.
 
@@ -193,10 +195,11 @@ Optional widgets may be left out of the WBP; the code checks for them and simply
 |---|---|
 | **Grid** | Slot widgets are created once (`MaxSlots`) and reused; any inventory event triggers a full refresh (cheap for ~30 slots, and never out of sync) |
 | **Stack count** | Shown only when `Quantity > 1` |
-| **Right-click** | Drops 1 unit; **Shift + right-click** drops the whole stack |
+| **Right-click** | Drops 1 unit; **Shift + right-click** drops the whole stack. A fast second right-click (which Slate reports as a double-click) is treated as another right-click |
+| **Double-click** | Broadcasts `OnEntryActivated(Entry)` on the screen. The inventory does not decide what it means; the game layer does (the template equips the item, see [Equipment](Equipment.md)) |
 | **Tabs** | `SetFilter(Tag)` on the screen; the grid shows only entries whose `ItemType` matches the tag **hierarchically** (`Item.Type.Weapon` also shows `Item.Type.Weapon.Sword`). Empty tag = all |
 | **Weight bar** | Fill = current / max; `OverweightColor` when over the limit; hidden when `bUseWeight` is off |
-| **Tooltip** | Name, description and total stack weight; lines with no data are hidden |
+| **Tooltip** | Name, description and total stack weight; lines with no data are hidden. The widget implements the RPGCore `IRPGItemTooltip` interface, so other UI modules (equipment) reuse it without depending on `RPGInventoryUI` |
 
 Because slots store the **`EntryId`**, right-click drop is correct in filtered views where slot index ≠ entry index.
 

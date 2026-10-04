@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core, Interaction and Inventory are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction, Inventory and Equipment are complete; the remaining systems are planned below.
 
 ---
 
@@ -14,10 +14,10 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 
 | System | Plugin | Status |
 |---|---|---|
-| Core (tags, interfaces, item data model) | `RPGCore` | ✅ |
+| Core (tags, interfaces, item data model, stat modifiers) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
 | **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
-| Equipment | `RPGEquipment` | ⏳ |
+| **Equipment** (tag-based slots, safe swaps, attached meshes, stat modifiers, equipment panel) | `RPGEquipment` | ✅ |
 | Abilities & Stats (GAS) | `RPGAbilities` | ⏳ |
 | Progression (XP, level, skill tree) | `RPGProgression` | ⏳ |
 | Loot & Rarity | `RPGLoot` | ⏳ |
@@ -38,6 +38,8 @@ graph BT
     InteractionUI["RPGInteractionUI"]
     Inventory["RPGInventory"]
     InventoryUI["RPGInventoryUI"]
+    Equipment["RPGEquipment"]
+    EquipmentUI["RPGEquipmentUI"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
@@ -45,9 +47,12 @@ graph BT
     InteractionUI --> Interaction
     Inventory --> Core
     InventoryUI --> Inventory
+    Equipment --> Core
+    EquipmentUI --> Equipment
     Other --> Core
     Game --> InteractionUI
     Game --> InventoryUI
+    Game --> EquipmentUI
     Game --> Other
 ```
 
@@ -167,6 +172,37 @@ The logic is list-based; the grid exists only in the UI.
 3. **World** → `BP_ItemPickup` (from `RPGItemPickup`) with the `Interactable` collision preset; set `Item` / `Quantity`.
 4. **UI** → Widget Blueprints from the four `RPGInventoryUI` bases, then **`RPG Inventory UI`** on the
    PlayerController and an input action → `Toggle Inventory`.
+
+---
+
+## Equipment System
+
+Tag-based equipment slots that move items to and from any item container without ever losing or duplicating them,
+attach meshes to the character, and add stat modifiers. Equipment does not depend on the inventory plugin.
+
+📖 **Full documentation:** [`docs/systems/Equipment.md`](docs/systems/Equipment.md)
+
+### Features
+
+- **Gameplay Tag slots** (`Equipment.Slot.Head`, `MainHand`, ...): new slots are data, and each character chooses
+  its own slot set
+- **Equipment fragment** on the item definition: slot, static or skeletal mesh, socket, stat modifiers
+- **Safe transfer** through `IRPGItemContainer`: swaps work even with a full inventory, with rollback and a typed
+  `ERPGEquipResult` (`ContainerFull`, `NoValidSlot`, ...)
+- **Visuals component:** static meshes attach to sockets, skeletal meshes follow the body via Leader Pose;
+  no collision, so they never block interaction traces
+- **Stat modifiers** (`Stat.Damage`, `Stat.Armor`, ...) computed on demand, ready for the GAS stats system
+- **Equipment panel:** freely laid-out slots, live stats, double-click to unequip,
+  **double-click in the inventory to equip**
+- **Shared tooltip** through the RPGCore `IRPGItemTooltip` interface, so the two UI modules never depend on each other
+
+### Quick start
+
+1. **Pawn** → add **`RPG Equipment`** (available slots, starting equipment) and **`RPG Equipment Visuals`**.
+2. **Item** → add an **Equipment** fragment to an `RPGItemDefinition` (slot, mesh, socket, modifiers).
+3. **Skeleton** → add the sockets your items use (e.g. `weapon_r`).
+4. **UI** → `WBP_EquipmentSlot` / `WBP_EquipmentPanel` from the `RPGEquipmentUI` bases, set each slot's
+   `Slot Tag`, place the panel in the inventory screen and wire `On Entry Activated → Equip From Container`.
 
 ---
 
