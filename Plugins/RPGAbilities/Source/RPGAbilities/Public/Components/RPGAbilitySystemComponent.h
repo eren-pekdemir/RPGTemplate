@@ -8,7 +8,7 @@
 #include "RPGAbilitySystemComponent.generated.h"
 
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()

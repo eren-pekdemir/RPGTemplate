@@ -77,4 +77,6 @@ namespace RPGTags
 
 	// ---------- Event.Faction ----------
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Faction_ReputationChanged, "Event.Faction.ReputationChanged", "Broadcast when reputation with a faction changes");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Dead, "State.Dead", "Character is dead.");
 }
