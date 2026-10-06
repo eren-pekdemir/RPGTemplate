@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "Attributes/RPGAttributeSet.h"
+#include "Interfaces/RPGStatReceiver.h"
 #include "RPGAbilitySystemComponent.generated.h"
 
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
-class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent
+class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent , public IRPGStatReceiver
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,11 @@ public:
 	/** Effects applied once on BeginPlay (starting values, passives). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RPG|Abilities")
 	TArray<TSubclassOf<UGameplayEffect>> DefaultEffects;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> StatModifierEffect;
+	
+	virtual void SetStatModifiers(const UObject* Source, const TArray<FRPGStatModifier>& Modifiers) override;
 
 protected:
 	// Called when the game starts
@@ -33,4 +39,6 @@ protected:
 private:
 	void CreateDefaultAttributeSets();
 	void ApplyDefaultEffects();
+	
+	TMap<TWeakObjectPtr<const UObject>, FActiveGameplayEffectHandle> StatModifierHandles;
 };

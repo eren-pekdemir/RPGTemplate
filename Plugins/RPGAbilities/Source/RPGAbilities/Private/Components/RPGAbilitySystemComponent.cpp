@@ -2,16 +2,62 @@
 
 
 #include "Components/RPGAbilitySystemComponent.h"
-
 #include "RPGAbilities.h"
+#include "GameplayEffect.h"
+#include "AttributeSet.h"
 
 
 URPGAbilitySystemComponent::URPGAbilitySystemComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 }
 
+
+void URPGAbilitySystemComponent::SetStatModifiers(const UObject* Source, const TArray<FRPGStatModifier>& Modifiers)
+{
+	FActiveGameplayEffectHandle OldHandle;
+	if (StatModifierHandles.RemoveAndCopyValue(Source, OldHandle))
+	{
+		RemoveActiveGameplayEffect(OldHandle);
+	}
+	if (Modifiers.IsEmpty()) return;
+	
+	if (!StatModifierEffect)
+	{
+		UE_LOG(LogRPGAbilities, Warning, TEXT("%s: StatModifierEffect is not set, stat modifiers ignored"),*GetNameSafe(GetOwner()));
+		return;
+	}
+	
+	FGameplayEffectContextHandle Context = MakeEffectContext();
+	Context.AddSourceObject(Source);
+	FGameplayEffectSpecHandle SpecHandle =MakeOutgoingSpec(StatModifierEffect, 1.f, Context);
+	if (!SpecHandle.IsValid()) return;
+	
+	const UGameplayEffect* CDO = StatModifierEffect->GetDefaultObject<UGameplayEffect>();
+	for (const FGameplayModifierInfo& ModInfo : CDO->Modifiers)
+	{
+		FGameplayTag Tag = ModInfo.ModifierMagnitude.GetSetByCallerFloat().DataTag;
+		if (Tag.IsValid())
+		{
+			SpecHandle.Data->SetSetByCallerMagnitude(Tag,0);
+		}
+	}	
+	
+	TMap<FGameplayTag, float> Totals;
+	
+	for (const auto& Mod : Modifiers)
+	{
+		Totals.FindOrAdd(Mod.Stat) += Mod.Value;
+	}
+	
+	for (const  auto&  Pair : Totals)
+	{
+		SpecHandle.Data->SetSetByCallerMagnitude(Pair.Key,Pair.Value);
+	}
+	
+	FActiveGameplayEffectHandle ActiveHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	StatModifierHandles.Add(Source, ActiveHandle);
+}
 
 void URPGAbilitySystemComponent::BeginPlay()
 {

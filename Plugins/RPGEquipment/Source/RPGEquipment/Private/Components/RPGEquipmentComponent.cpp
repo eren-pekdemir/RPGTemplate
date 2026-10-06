@@ -9,6 +9,7 @@
 #include "Items/RPGItemDefinition.h"
 #include "RPGCoreTags.h"
 #include "Interfaces/RPGItemContainer.h"
+#include "Interfaces/RPGStatReceiver.h"
 
 URPGEquipmentComponent::URPGEquipmentComponent()
 {
@@ -72,7 +73,25 @@ void URPGEquipmentComponent::SetSlotItem(FGameplayTag Slot, const URPGItemDefini
 		EquippedItems.Remove(Slot);
 	}
 	
+	PushStatModifiers();
 	OnEquipmentChanged.Broadcast(Slot, NewItem, OldItem);
+}
+
+void URPGEquipmentComponent::PushStatModifiers()
+{
+	IRPGStatReceiver* StatReciever = URPGCoreStatics::FindStatReceiver(GetOwner());
+	if (!StatReciever) return;
+	
+	TArray<FRPGStatModifier> Modifiers;
+	
+	for (const auto& Pair : GetAllStatModifiers())
+	{
+		FRPGStatModifier& NewModifier = Modifiers.AddDefaulted_GetRef();
+		NewModifier.Stat = Pair.Key;
+		NewModifier.Value = Pair.Value;
+	}
+	
+	StatReciever->SetStatModifiers(this, Modifiers);
 }
 
 const URPGItemDefinition* URPGEquipmentComponent::GetEquippedItem(FGameplayTag Slot) const

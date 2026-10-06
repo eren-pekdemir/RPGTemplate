@@ -9,6 +9,7 @@
 #include "RPGEquipmentComponent.generated.h"
 
 class URPGItemDefinition;
+struct FRPGStatModifier;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRPGOnEquipmentChangedSignature,
@@ -70,4 +71,6 @@ private:
 	
 	UPROPERTY(VisibleInstanceOnly, SaveGame)
 	TMap<FGameplayTag, TObjectPtr<const URPGItemDefinition>> EquippedItems;
+	
+	void PushStatModifiers();
 };

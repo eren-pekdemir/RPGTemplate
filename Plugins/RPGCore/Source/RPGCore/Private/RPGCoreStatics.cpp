@@ -3,6 +3,7 @@
 #include "RPGCoreStatics.h"
 #include "Interfaces/RPGItemContainer.h"
 #include "Interfaces/RPGCurrencyHolder.h"
+#include "Interfaces/RPGStatReceiver.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(RPGCoreStatics)
 
@@ -14,6 +15,11 @@ IRPGItemContainer* URPGCoreStatics::FindItemContainer(AActor* Actor)
 IRPGCurrencyHolder* URPGCoreStatics::FindCurrencyHolder(AActor* Actor)
 {
 	return FindInterface<IRPGCurrencyHolder, URPGCurrencyHolder>(Actor);
+}
+
+IRPGStatReceiver* URPGCoreStatics::FindStatReceiver(AActor* Actor) 
+{
+	return FindInterface<IRPGStatReceiver, URPGStatReceiver>(Actor);
 }
 
 int32 URPGCoreStatics::GetItemCount(AActor* Target, const URPGItemDefinition* Item)
