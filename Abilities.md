@@ -10,7 +10,7 @@ cost and cooldown, a health component that reports damage and death, and a gener
 | *Who owns them and runs abilities?* | **`URPGAbilitySystemComponent`** (on the pawn) |
 | *How much damage does a hit do?* | **`URPGDamageExecution`** inside `GE_Damage` |
 | *When does a character die?* | **`URPGHealthComponent`** (on the pawn) |
-| *How do equipment bonuses reach the stats?* | **`IRPGStatReceiver`** (RPGCore), implemented by the ASC |
+| *How do equipment and progression bonuses reach the stats?* | **`IRPGStatReceiver`** / **`IRPGTagReceiver`** (RPGCore), implemented by the ASC |
 | *What can the character do?* | **Abilities** derived from `URPGGameplayAbility` |
 | *How does the player see it?* | **`URPGAttributeBarWidget`** (`RPGAbilitiesUI`) |
 
@@ -20,7 +20,7 @@ cost and cooldown, a health component that reports damage and death, and a gener
 
 ```
 Plugins/
-├── RPGCore/                            IRPGStatReceiver, FRPGStatModifier, State.Dead / Stat.* tags
+├── RPGCore/                            IRPGStatReceiver, IRPGTagReceiver, FRPGStatModifier, State.Dead / Stat.* tags
 └── RPGAbilities/
     ├── RPGAbilities   (Runtime)        ASC, attribute sets, health component, damage execution, abilities
     └── RPGAbilitiesUI (Runtime)        Attribute bar widget (UMG)
@@ -88,6 +88,7 @@ search).
 | `AbilityInputTagPressed(Tag)` | Marks matching abilities as pressed, then tries to activate the inactive ones |
 | `AbilityInputTagReleased(Tag)` | Forwards the release (for hold / charge abilities) |
 | `SetStatModifiers(Source, Modifiers)` | `IRPGStatReceiver` implementation |
+| `SetGrantedTags(Source, Tags)` | `IRPGTagReceiver` implementation: replaces the loose tags held for `Source` (used by skills, e.g. `Skill.Dodge`) |
 
 Empty or duplicate entries in the arrays are skipped with a warning (`LogRPGAbilities`).
 `AbilityInputTagPressed` collects handles first and activates afterwards, so an ability that grants other abilities
@@ -110,6 +111,24 @@ On death the component adds the loose tag **`State.Dead`** (RPGCore) to the ASC.
 `State.Dead` in its `ActivationBlockedTags`, so dead characters cannot act, and melee attacks skip dead targets.
 The instigator comes from the effect context, which is why every effect in this system is created with a filled
 context (`MakeEffectContext` / `MakeOutgoingGameplayEffectSpec`).
+
+### The meta-attribute instigator pitfall
+
+GAS attaches "which effect caused this" (`GEModData`) only to the attribute an effect modifies **directly**. Damage
+modifies `IncomingDamage`; `Health` is then changed by our own `SetHealth` call in `PostGameplayEffectExecute`, so the
+`Health` change callback arrives with `GEModData == nullptr` and no instigator. Without a fix, `OnDeath` reports a
+null `Killer` and kill rewards cannot work.
+
+```cpp
+// URPGHealthSet::PostGameplayEffectExecute, IncomingDamage branch
+DamageInstigator = Data.EffectSpec.GetContext().GetOriginalInstigator();
+SetHealth(...);              // the Health callback runs synchronously inside this call
+DamageInstigator.Reset();
+```
+
+`URPGHealthComponent` uses `GEModData` when it exists (an effect that changes `Health` directly, e.g. a heal) and
+otherwise asks the set for `GetDamageInstigator()`. The value is a weak pointer and only lives for that one call, so
+later unrelated changes (a `MaxHealth` clamp) are never attributed to an old attacker.
 
 ---
 
@@ -199,6 +218,7 @@ Launches the character in the movement-input direction (or forward when standing
 |---|---|
 | Cost | `GE_DodgeCost`: instant, `Stamina -25` |
 | Cooldown | `GE_DodgeCooldown`: 1 s duration, grants `Cooldown.Dodge` |
+| Requires | `Skill.Dodge` (*Activation Required Tags*), granted by the Dodge skill in [Progression](Progression.md) |
 
 GAS checks both before activation: with less than 25 stamina, or while `Cooldown.Dodge` is present, the ability
 simply does not start. Blueprint abilities must call **Commit Ability** themselves, and every execution path must end
@@ -249,7 +269,7 @@ the value itself does not change.
 |---|---|---|
 | `GE_InitStats` | Instant | Override `MaxHealth`, `Health`, `MaxStamina`, `Stamina`, `Damage`, `Armor` (max before value) |
 | `GE_StaminaRegen` | Infinite, Period 0.1 | `Stamina +2` |
-| `GE_StatModifiers` | Infinite | `Damage` Add SetByCaller(`Stat.Damage`), `Armor` Add SetByCaller(`Stat.Armor`) |
+| `GE_StatModifiers` | Infinite | Add SetByCaller for `Damage` (`Stat.Damage`), `Armor` (`Stat.Armor`), `MaxHealth` (`Stat.MaxHealth`), `MaxStamina` (`Stat.MaxStamina`) |
 | `GE_Damage` | Instant | Execution: `RPGDamageExecution` |
 | `GE_DodgeCost` | Instant | `Stamina -25` |
 | `GE_DodgeCooldown` | Duration 1 s | Grants `Cooldown.Dodge` |
@@ -275,6 +295,7 @@ the value itself does not change.
 | `InputTag.Attack`, `InputTag.Dodge` | RPGAbilities | Input → ability routing |
 | `Event.Melee.Hit` | RPGAbilities | Montage hit frame |
 | `Cooldown.Dodge` | RPGAbilities | Granted by the dodge cooldown effect |
+| `Skill.Dodge` | Project settings | Required by `GA_Dodge` (*Activation Required Tags*); granted by the Dodge skill |
 
 ---
 
@@ -287,7 +308,8 @@ the value itself does not change.
 | Starting values from an effect | Data, not code; per-character variants without subclasses |
 | Meta attribute for damage | One place converts damage into health loss; future shields / resistances hook in there |
 | Separate health component | Attribute sets stay numeric; events and the `State.Dead` tag live in a Blueprint-friendly component |
-| Stat bridge through an RPGCore interface | Equipment and GAS stay independent plugins |
+| Stat bridge through an RPGCore interface | Equipment, Progression and GAS stay independent plugins |
+| Instigator exposed by the health set during `SetHealth` | Keeps the meta-attribute design and still reports who dealt the damage |
 | Input tags instead of keys | Rebinding, gamepad and AI use the same abilities |
 | Cost and cooldown as effects | Checked by GAS before activation; a buff can later shorten a cooldown by changing data |
 | Generic attribute bar | Health, stamina and future mana share one widget class |
@@ -297,7 +319,8 @@ the value itself does not change.
 ## 12. Known Limitations / Next Steps
 
 - Single-player only: attributes are not replicated and abilities are not predicted.
-- Attributes reset on respawn (the ASC lives on the pawn); Save / Load and Progression will restore them.
+- Current values (`Health`, `Stamina`) reset on respawn because the ASC lives on the pawn. Level and skill bonuses
+  are re-applied by Progression (on the PlayerState); Save / Load will restore the rest.
 - No revive: `URPGHealthComponent` does not clear `State.Dead`.
 - The melee attack uses a delay until an attack animation is added (the montage path and the `Event.Melee.Hit`
   notify are supported; the notify class is not written yet).
