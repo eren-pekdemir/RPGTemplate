@@ -48,7 +48,11 @@ void URPGHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Data
 	AActor* Instigator = nullptr;
 	if (Data.GEModData)
 	{
-		 Instigator = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
+		Instigator = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
+	}
+	else if (const URPGHealthSet* HealthSet = AbilitySystem->GetSet<URPGHealthSet>())  // ASC değişkeninin adı neyse
+	{
+		Instigator = HealthSet->GetDamageInstigator();
 	}
 	
 	OnHealthChanged.Broadcast(this, Data.OldValue, Data.NewValue, Instigator);

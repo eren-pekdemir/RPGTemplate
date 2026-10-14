@@ -41,7 +41,11 @@ public:
 	/** After an Instant effect executed on this set. Convert IncomingDamage into a Health loss. */
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
+	AActor* GetDamageInstigator() const { return DamageInstigator.Get(); }
+	
 private:
 	/** Health -> [0, MaxHealth], MaxHealth -> at least 1. Other attributes are left untouched. */
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
+	
+	TWeakObjectPtr<AActor> DamageInstigator;
 };

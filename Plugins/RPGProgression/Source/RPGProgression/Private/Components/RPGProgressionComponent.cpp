@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerState.h"
 #include "RPGProgression.h"
 #include "Interfaces/RPGStatReceiver.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
 #include "Interfaces/RPGTagReceiver.h"
 #include "Skills/RPGSkillDefinition.h"
 #include "Stats/RPGStatModifier.h"
@@ -219,4 +221,33 @@ void URPGProgressionComponent::PushTags(AActor* Target)
     }
     
     TagReceiver->SetGrantedTags(this, Tags);
+}
+
+URPGProgressionComponent* URPGProgressionComponent::FindProgressionComponent(const AActor* Actor)
+{
+    if (!Actor)
+    {
+        return nullptr;
+    }
+
+    if (URPGProgressionComponent* Found = Actor->FindComponentByClass<URPGProgressionComponent>())
+    {
+        return Found;
+    }
+
+    const APlayerState* PlayerState = nullptr;
+    if (const APawn* Pawn = Cast<APawn>(Actor))
+    {
+        PlayerState = Pawn->GetPlayerState();
+    }
+    else if (const AController* Controller = Cast<AController>(Actor))
+    {
+        PlayerState = Controller->PlayerState;
+    }
+    else if (const APawn* InstigatorPawn = Actor->GetInstigator())
+    {
+        PlayerState = InstigatorPawn->GetPlayerState();
+    }
+
+    return PlayerState ? PlayerState->FindComponentByClass<URPGProgressionComponent>() : nullptr;
 }
