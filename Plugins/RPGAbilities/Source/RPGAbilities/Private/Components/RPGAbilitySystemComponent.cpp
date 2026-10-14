@@ -98,6 +98,20 @@ void URPGAbilitySystemComponent::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 }
 
+void URPGAbilitySystemComponent::SetGrantedTags(const UObject* Source, const FGameplayTagContainer& Tags)
+{
+	FGameplayTagContainer OldTags;
+	if (GrantedTagsBySource.RemoveAndCopyValue(Source, OldTags))
+	{
+		RemoveLooseGameplayTags(OldTags);
+	}
+	
+	if (Tags.IsEmpty()) return;
+	
+	AddLooseGameplayTags(Tags);
+	GrantedTagsBySource.Add(Source, Tags);
+}
+
 void URPGAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();

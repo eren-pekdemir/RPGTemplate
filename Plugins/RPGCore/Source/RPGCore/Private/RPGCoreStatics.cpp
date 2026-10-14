@@ -4,6 +4,8 @@
 #include "Interfaces/RPGItemContainer.h"
 #include "Interfaces/RPGCurrencyHolder.h"
 #include "Interfaces/RPGStatReceiver.h"
+#include "Interfaces/RPGTagReceiver.h"
+#include "WorldPartition/HLOD/HLODActor.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(RPGCoreStatics)
 
@@ -20,6 +22,11 @@ IRPGCurrencyHolder* URPGCoreStatics::FindCurrencyHolder(AActor* Actor)
 IRPGStatReceiver* URPGCoreStatics::FindStatReceiver(AActor* Actor) 
 {
 	return FindInterface<IRPGStatReceiver, URPGStatReceiver>(Actor);
+}
+
+IRPGTagReceiver* URPGCoreStatics::FindTagReceiver(AActor* Actor)
+{
+	return FindInterface<IRPGTagReceiver, URPGTagReceiver>(Actor);
 }
 
 int32 URPGCoreStatics::GetItemCount(AActor* Target, const URPGItemDefinition* Item)

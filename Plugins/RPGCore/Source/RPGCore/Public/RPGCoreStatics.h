@@ -15,6 +15,7 @@ class IRPGItemContainer;
 class IRPGCurrencyHolder;
 class URPGItemDefinition;
 class IRPGStatReceiver;
+class IRPGTagReceiver;
 
 UCLASS()
 class RPGCORE_API URPGCoreStatics : public UBlueprintFunctionLibrary
@@ -40,6 +41,7 @@ public:
 	static IRPGItemContainer* FindItemContainer(AActor* Actor);
 	static IRPGCurrencyHolder* FindCurrencyHolder(AActor* Actor);
 	static IRPGStatReceiver* FindStatReceiver(AActor* Actor);
+	static IRPGTagReceiver* FindTagReceiver(AActor* Actor);
 
 	// ---------- Items ----------
 	UFUNCTION(BlueprintPure, Category = "RPG|Items")
