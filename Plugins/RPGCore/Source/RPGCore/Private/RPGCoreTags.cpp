@@ -41,6 +41,8 @@ namespace RPGTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Strength,     "Stat.Strength",     "Strength");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Dexterity,    "Stat.Dexterity",    "Dexterity");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_Intelligence, "Stat.Intelligence", "Intelligence");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_MaxHealth,    "Stat.MaxHealth",    "MaxHealth");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stat_MaxStamina, "Stat.MaxStamina", "MaxStamina");
 
 	// ---------- Currency ----------
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Currency,      "Currency",      "Root: currency type");

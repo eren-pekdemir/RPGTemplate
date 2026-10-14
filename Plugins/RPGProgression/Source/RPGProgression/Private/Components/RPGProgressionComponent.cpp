@@ -2,9 +2,12 @@
 
 #include "Components/RPGProgressionComponent.h"
 
+#include "RPGCoreStatics.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/PlayerState.h"
 #include "RPGProgression.h"
+#include "Interfaces/RPGStatReceiver.h"
+#include "Stats/RPGStatModifier.h"
 
 URPGProgressionComponent::URPGProgressionComponent()
 {
@@ -117,6 +120,23 @@ void URPGProgressionComponent::HandlePawnSet(APlayerState* Player, APawn* NewPaw
 
 void URPGProgressionComponent::PushToTarget()
 {
-    // Step 2: push level stat modifiers. Step 4: push skill tags.
-    UE_LOG(LogRPGProgression, Log, TEXT("Push to %s"), *GetNameSafe(GetTargetActor()));
+    AActor* Target = GetTargetActor();
+    
+    IRPGStatReceiver* Receiver = URPGCoreStatics::FindStatReceiver(Target);
+    if (!Receiver) return;
+    
+    const int32 Multiplier = Level - 1;
+    
+    TArray<FRPGStatModifier> LevelModifiers;
+    
+    for (const FRPGStatModifier& Modifier : StatsPerLevel)
+    {
+        if (!Modifier.Stat.IsValid()) continue;
+        FRPGStatModifier StatModifier = Modifier;
+        StatModifier.Value = Modifier.Value * Multiplier;
+        LevelModifiers.Add(StatModifier);
+    }
+    
+    Receiver->SetStatModifiers(this, LevelModifiers);
+    
 }

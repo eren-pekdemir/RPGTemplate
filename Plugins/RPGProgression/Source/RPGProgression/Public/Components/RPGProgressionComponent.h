@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Stats/RPGStatModifier.h"
 #include "RPGProgressionComponent.generated.h"
 
 class APawn;
@@ -44,6 +45,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RPG|Progression", meta = (ClampMin = "0"))
     int32 SkillPointsPerLevel = 1;
+    
+    /** Added once per level above 1 (Level 3 = 2x these values). */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RPG|Progression", meta = (TitleProperty = "Stat"))
+    TArray<FRPGStatModifier> StatsPerLevel;
 
     // ~ Events
 
