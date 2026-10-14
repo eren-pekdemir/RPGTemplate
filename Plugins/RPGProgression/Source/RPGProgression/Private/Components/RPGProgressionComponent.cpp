@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "RPGProgression.h"
 #include "Interfaces/RPGStatReceiver.h"
+#include "Skills/RPGSkillDefinition.h"
 #include "Stats/RPGStatModifier.h"
 
 URPGProgressionComponent::URPGProgressionComponent()
@@ -113,30 +114,86 @@ AActor* URPGProgressionComponent::GetTargetActor() const
     return GetOwner();
 }
 
+ERPGSkillUnlockResult URPGProgressionComponent::CanUnlockSkill(const URPGSkillDefinition* Skill) const
+{
+    if (!Skill) return ERPGSkillUnlockResult::InvalidSkill;
+    if (IsSkillUnlocked(Skill)) return ERPGSkillUnlockResult::AlreadyUnlocked;
+    if (Level < Skill->RequiredLevel) return ERPGSkillUnlockResult::LevelTooLow;
+
+    for (const URPGSkillDefinition* Prerequisite : Skill->Prerequisites)
+    {
+        if (!Prerequisite) continue;   // empty slot in the data asset
+
+        if (!IsSkillUnlocked(Prerequisite))
+        {
+            return ERPGSkillUnlockResult::MissingPrerequisite;
+        }
+    }
+
+    if (SkillPoints < Skill->SkillPointCost) return ERPGSkillUnlockResult::NotEnoughPoints;
+
+    return ERPGSkillUnlockResult::Success;
+}
+
+ERPGSkillUnlockResult URPGProgressionComponent::UnlockSkill(const URPGSkillDefinition* Skill)
+{
+   ERPGSkillUnlockResult Result = CanUnlockSkill(Skill);
+    if (Result != ERPGSkillUnlockResult::Success)
+    {
+        return Result;
+    }
+    
+    SkillPoints -= Skill->SkillPointCost;
+    UnlockedSkills.Add(Skill);
+    OnSkillPointsChanged.Broadcast(SkillPoints);
+    OnSkillUnlocked.Broadcast(Skill);
+    PushToTarget();
+    
+    return ERPGSkillUnlockResult::Success;
+    
+}
+
+bool URPGProgressionComponent::IsSkillUnlocked(const URPGSkillDefinition* Skill) const
+{
+   return UnlockedSkills.Contains(Skill);
+}
+
+
 void URPGProgressionComponent::HandlePawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
     PushToTarget();
 }
-
 void URPGProgressionComponent::PushToTarget()
 {
     AActor* Target = GetTargetActor();
-    
+
     IRPGStatReceiver* Receiver = URPGCoreStatics::FindStatReceiver(Target);
     if (!Receiver) return;
-    
+
+    TArray<FRPGStatModifier> Modifiers;
+
+    // Level bonuses: StatsPerLevel x (Level - 1).
     const int32 Multiplier = Level - 1;
-    
-    TArray<FRPGStatModifier> LevelModifiers;
-    
     for (const FRPGStatModifier& Modifier : StatsPerLevel)
     {
         if (!Modifier.Stat.IsValid()) continue;
-        FRPGStatModifier StatModifier = Modifier;
-        StatModifier.Value = Modifier.Value * Multiplier;
-        LevelModifiers.Add(StatModifier);
+
+        FRPGStatModifier Scaled = Modifier;
+        Scaled.Value = Modifier.Value * Multiplier;
+        Modifiers.Add(Scaled);
     }
-    
-    Receiver->SetStatModifiers(this, LevelModifiers);
-    
+
+    // Skill bonuses: added as they are. The receiver sums duplicate stats.
+    for (const URPGSkillDefinition* Skill : UnlockedSkills)
+    {
+        if (!Skill) continue;
+
+        for (const FRPGStatModifier& Modifier : Skill->StatModifiers)
+        {
+            if (!Modifier.Stat.IsValid()) continue;
+            Modifiers.Add(Modifier);
+        }
+    }
+
+    Receiver->SetStatModifiers(this, Modifiers);
 }
