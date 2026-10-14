@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core, Interaction, Inventory, Equipment and Abilities & Stats are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction, Inventory, Equipment, Abilities & Stats and Progression are complete; the remaining systems are planned below.
 
 ---
 
@@ -14,12 +14,12 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 
 | System | Plugin | Status |
 |---|---|---|
-| Core (tags, interfaces, item data model, stat modifiers, stat receiver) | `RPGCore` | ✅ |
+| Core (tags, interfaces, item data model, stat modifiers, stat & tag receivers) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
 | **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
 | **Equipment** (tag-based slots, safe swaps, attached meshes, stat modifiers, equipment panel) | `RPGEquipment` | ✅ |
 | **Abilities & Stats** (GAS: health / stamina / combat attributes, damage pipeline, melee & dodge, HUD bars) | `RPGAbilities` | ✅ |
-| Progression (XP, level, skill tree) | `RPGProgression` | ⏳ |
+| **Progression** (XP & levels, stat growth, skill tree with prerequisites, skill-gated abilities, kill rewards, tree UI) | `RPGProgression` | ✅ |
 | Loot & Rarity | `RPGLoot` | ⏳ |
 | Crafting | `RPGCrafting` | ⏳ |
 | Market / Economy | `RPGEconomy` | ⏳ |
@@ -42,6 +42,8 @@ graph BT
     EquipmentUI["RPGEquipmentUI"]
     Abilities["RPGAbilities<br/><i>GAS</i>"]
     AbilitiesUI["RPGAbilitiesUI"]
+    Progression["RPGProgression"]
+    ProgressionUI["RPGProgressionUI"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
@@ -53,11 +55,14 @@ graph BT
     EquipmentUI --> Equipment
     Abilities --> Core
     AbilitiesUI --> Abilities
+    Progression --> Core
+    ProgressionUI --> Progression
     Other --> Core
     Game --> InteractionUI
     Game --> InventoryUI
     Game --> EquipmentUI
     Game --> AbilitiesUI
+    Game --> ProgressionUI
     Game --> Other
 ```
 
@@ -65,7 +70,7 @@ graph BT
 
 - **System plugins depend only on `RPGCore`** (and engine modules), never on each other.
   The rule is enforced by the compiler: a system cannot `#include` another system because it is not in its `Build.cs`.
-- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, `IRPGStatReceiver`, ...),
+- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, `IRPGStatReceiver`, `IRPGTagReceiver`, ...),
   delegates and Gameplay Tags defined in `RPGCore`.
 - **Runtime logic and UI are separate modules.** Core gameplay modules never depend on UMG, so a dedicated
   server or a game with its own UI can drop the UI module.
@@ -244,6 +249,39 @@ input-driven abilities with cost and cooldown, death handling and generic HUD ba
 
 ---
 
+## Progression System
+
+Experience, levels and a skill tree on the PlayerState. Enemies grant XP on death, levels give skill points and stat
+growth, and skills add stats or unlock abilities. Progression reaches the character only through RPGCore interfaces,
+so it does not depend on GAS.
+
+📖 **Full documentation:** [`docs/systems/Progression.md`](docs/systems/Progression.md)
+
+### Features
+
+- **XP and levels** from a curve asset, multi-level gains in one reward, max level, skill points per level and
+  per-level stat growth
+- **Lives on the PlayerState:** survives death and respawn, and re-applies its bonuses to every new pawn
+- **Data-driven skills:** cost, required level, prerequisites, stat modifiers and granted tags in a data asset;
+  a typed `ERPGSkillUnlockResult` tells the UI *why* an unlock failed
+- **Skill-gated abilities without code:** a skill grants `Skill.Dodge`, and `GA_Dodge` requires it through
+  `ActivationRequiredTags`
+- **Same snapshot bridge as equipment:** level and skill stats go through `IRPGStatReceiver`, tags through
+  `IRPGTagReceiver`; sources never overwrite each other
+- **Kill rewards:** an `RPG Experience Reward` component on enemies; one Blueprint wire from `On Death`
+- **UI:** XP bar, skill nodes with Locked / Available / Unlocked states and tooltips, and a skill tree screen that
+  lays nodes out from data, draws prerequisite lines in `NativePaint` and stays in sync through events
+
+### Quick start
+
+1. **PlayerState** → `BP_PlayerState` with **`RPG Progression`** (curve, level range, points, stat growth, skill tree);
+   set it in the GameMode.
+2. **Skills** → `RPGSkillDefinition` assets and one `RPGSkillTreeDefinition` with node positions.
+3. **Enemies** → **`RPG Experience Reward`**; `On Death` → `Grant Reward (Killer)`.
+4. **UI** → `WBP_ExperienceBar` in the HUD; `WBP_SkillNode` / `WBP_SkillTree` and a toggle key on the PlayerController.
+
+---
+
 ## Project Setup
 
 - **Engine:** Unreal Engine 5
@@ -263,4 +301,4 @@ The sandbox map `L_Sandbox` contains test interactables for every feature.
 
 ## Author
 
-**Eren Pekdemir** — Computer Engineering student, Riga Technical University
+**Eren Pekdemir** — Computer Engineering student, Burdur Mehmet Akif Ersoy University
