@@ -13,4 +13,7 @@ namespace RPGTags
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Melee_Hit, "Event.Melee.Hit",
 		"Event melee tag.");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Dodge, "Cooldown.Dodge",
+	"Cooldown dodge tag.");
 }
