@@ -10,6 +10,7 @@ class APawn;
 class APlayerState;
 class UCurveFloat;
 class URPGSkillDefinition;
+class URPGSkillTreeDefinition; 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnExperienceChangedSignature,
     int32, CurrentExperience, int32, RequiredExperience);
@@ -107,7 +108,12 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "RPG|Progression|Skills")
     bool IsSkillUnlocked(const URPGSkillDefinition* Skill) const;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RPG|Progression")
+    TObjectPtr<URPGSkillTreeDefinition> SkillTree;
 
+    UFUNCTION(BlueprintPure, Category = "RPG|Progression")
+    const URPGSkillTreeDefinition* GetSkillTree() const { return SkillTree; }
 
 protected:
     virtual void BeginPlay() override;
@@ -138,4 +144,6 @@ private:
     
     UPROPERTY(SaveGame)
     TArray<TObjectPtr<const URPGSkillDefinition>> UnlockedSkills;
+    
+    
 };
