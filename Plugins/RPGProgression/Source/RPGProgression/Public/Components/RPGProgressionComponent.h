@@ -3,11 +3,13 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Stats/RPGStatModifier.h"
+#include "RPGProgressionTypes.h"
 #include "RPGProgressionComponent.generated.h"
 
 class APawn;
 class APlayerState;
 class UCurveFloat;
+class URPGSkillDefinition;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnExperienceChangedSignature,
     int32, CurrentExperience, int32, RequiredExperience);
@@ -17,6 +19,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnLevelUpSignature,
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnSkillPointsChangedSignature,
     int32, SkillPoints);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnSkillUnlockedSignature,
+    const URPGSkillDefinition*, Skill);
 
 /**
  * Level, experience and skill points.
@@ -90,6 +95,19 @@ public:
     /** The actor that receives stats and tags: the PlayerState's pawn, or the owner itself. */
     UFUNCTION(BlueprintPure, Category = "RPG|Progression")
     AActor* GetTargetActor() const;
+    
+    UPROPERTY(BlueprintAssignable, Category = "RPG|Progression")
+    FRPGOnSkillUnlockedSignature OnSkillUnlocked;
+
+    UFUNCTION(BlueprintPure, Category = "RPG|Progression|Skills")
+    ERPGSkillUnlockResult CanUnlockSkill(const URPGSkillDefinition* Skill) const;
+
+    UFUNCTION(BlueprintCallable, Category = "RPG|Progression|Skills")
+    ERPGSkillUnlockResult UnlockSkill(const URPGSkillDefinition* Skill);
+
+    UFUNCTION(BlueprintPure, Category = "RPG|Progression|Skills")
+    bool IsSkillUnlocked(const URPGSkillDefinition* Skill) const;
+
 
 protected:
     virtual void BeginPlay() override;
@@ -111,4 +129,7 @@ private:
 
     UPROPERTY(SaveGame)
     int32 SkillPoints = 0;
+    
+    UPROPERTY(SaveGame)
+    TArray<TObjectPtr<const URPGSkillDefinition>> UnlockedSkills;
 };
