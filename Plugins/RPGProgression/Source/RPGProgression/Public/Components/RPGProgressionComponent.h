@@ -114,6 +114,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "RPG|Progression")
     const URPGSkillTreeDefinition* GetSkillTree() const { return SkillTree; }
+    
+    UFUNCTION(BlueprintPure, Category = "RPG|Progression")
+    static URPGProgressionComponent* FindProgressionComponent(const AActor* Actor);
 
 protected:
     virtual void BeginPlay() override;

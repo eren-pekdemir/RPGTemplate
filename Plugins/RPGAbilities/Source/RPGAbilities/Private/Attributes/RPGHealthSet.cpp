@@ -46,7 +46,9 @@ void URPGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDa
 		}
 		else
 		{
+			DamageInstigator = Data.EffectSpec.GetContext().GetOriginalInstigator();
 			SetHealth(0.f);
+			DamageInstigator.Reset();
 		}
 	}
 }
