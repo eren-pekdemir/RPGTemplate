@@ -8,6 +8,7 @@
 #include "Interfaces/RPGStatReceiver.h"
 #include "RPGAbilitySystemComponent.generated.h"
 
+class URPGGameplayAbility;
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent , public IRPGStatReceiver
@@ -29,6 +30,15 @@ public:
 	TSubclassOf<UGameplayEffect> StatModifierEffect;
 	
 	virtual void SetStatModifiers(const UObject* Source, const TArray<FRPGStatModifier>& Modifiers) override;
+	
+	UPROPERTY(EditAnywhere) 
+	TArray<TSubclassOf<URPGGameplayAbility>> DefaultAbilities;
+	
+	UFUNCTION(BlueprintCallable) 
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	
+	UFUNCTION(BlueprintCallable) 
+	void AbilityInputTagReleased(FGameplayTag InputTag);
 
 protected:
 	// Called when the game starts
@@ -41,4 +51,6 @@ private:
 	void ApplyDefaultEffects();
 	
 	TMap<TWeakObjectPtr<const UObject>, FActiveGameplayEffectHandle> StatModifierHandles;
+	
+	void GrantDefaultAbilities();
 };

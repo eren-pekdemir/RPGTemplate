@@ -5,6 +5,7 @@
 #include "RPGAbilities.h"
 #include "GameplayEffect.h"
 #include "AttributeSet.h"
+#include "Abilities/RPGGameplayAbility.h"
 
 
 URPGAbilitySystemComponent::URPGAbilitySystemComponent()
@@ -59,11 +60,50 @@ void URPGAbilitySystemComponent::SetStatModifiers(const UObject* Source, const T
 	StatModifierHandles.Add(Source, ActiveHandle);
 }
 
+void URPGAbilitySystemComponent::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (!InputTag.IsValid()) return;
+
+	// Phase 1: find matching abilities. Nothing here may change the ability list.
+	TArray<FGameplayAbilitySpecHandle> HandlesToActivate;
+
+	for (FGameplayAbilitySpec& Spec : GetActivatableAbilities())
+	{
+		if (!Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag)) continue;
+
+		// Marks the input as held; if the ability is already running, it receives InputPressed.
+		AbilitySpecInputPressed(Spec);
+
+		if (!Spec.IsActive())
+		{
+			HandlesToActivate.AddUnique(Spec.Handle);
+		}
+	}
+
+	// Phase 2: activate. An ability may grant or remove abilities here, which is now safe.
+	for (const FGameplayAbilitySpecHandle& Handle : HandlesToActivate)
+	{
+		TryActivateAbility(Handle);
+	}
+}
+
+void URPGAbilitySystemComponent::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (!InputTag.IsValid()) return;
+	
+	for (FGameplayAbilitySpec& Spec : GetActivatableAbilities())
+	{
+		if (!Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag)) continue;
+		AbilitySpecInputReleased(Spec);
+	}
+}
+
 void URPGAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	ApplyDefaultEffects();
+	GrantDefaultAbilities();
 	
 }
 
@@ -119,5 +159,28 @@ void URPGAbilitySystemComponent::ApplyDefaultEffects()
 
 		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
+}
+
+void URPGAbilitySystemComponent::GrantDefaultAbilities()
+{
+	for (const TSubclassOf<URPGGameplayAbility>& AbilityClass : DefaultAbilities)
+	{
+		if (!AbilityClass)
+		{
+			UE_LOG(LogRPGAbilities, Warning, TEXT("DefaultAbilities contains an empty entry"));
+			continue;
+		}
+		
+		const URPGGameplayAbility* AbilityCDO = AbilityClass->GetDefaultObject<URPGGameplayAbility>();
+		FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, GetOwner());
+		
+		if (AbilityCDO->InputTag.IsValid())
+		{
+			Spec.GetDynamicSpecSourceTags().AddTag(AbilityCDO->InputTag);
+		}
+		
+		GiveAbility(Spec);
+	}
+	
 }
 
