@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "RPGProgression.h"
 #include "Interfaces/RPGStatReceiver.h"
+#include "Interfaces/RPGTagReceiver.h"
 #include "Skills/RPGSkillDefinition.h"
 #include "Stats/RPGStatModifier.h"
 
@@ -166,7 +167,12 @@ void URPGProgressionComponent::HandlePawnSet(APlayerState* Player, APawn* NewPaw
 void URPGProgressionComponent::PushToTarget()
 {
     AActor* Target = GetTargetActor();
+    PushStats(Target);
+    PushTags(Target);
+}
 
+void URPGProgressionComponent::PushStats(AActor* Target)
+{
     IRPGStatReceiver* Receiver = URPGCoreStatics::FindStatReceiver(Target);
     if (!Receiver) return;
 
@@ -196,4 +202,21 @@ void URPGProgressionComponent::PushToTarget()
     }
 
     Receiver->SetStatModifiers(this, Modifiers);
+}
+
+void URPGProgressionComponent::PushTags(AActor* Target)
+{
+    IRPGTagReceiver* TagReceiver = URPGCoreStatics::FindTagReceiver(Target);
+    if (!TagReceiver) return;
+    
+    FGameplayTagContainer Tags;
+    
+    for (const auto& Skill : UnlockedSkills)
+    {
+        if (!Skill) continue;
+        
+        Tags.AppendTags(Skill->GrantedTags);
+    }
+    
+    TagReceiver->SetGrantedTags(this, Tags);
 }

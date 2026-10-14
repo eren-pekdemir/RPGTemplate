@@ -120,6 +120,12 @@ private:
     /** Re-send stats and tags to the target. Empty in Step 1; filled in Steps 2 and 4. */
     void PushToTarget();
 
+    /** Level bonuses + skill bonuses -> IRPGStatReceiver. */
+    void PushStats(AActor* Target);
+
+    /** Tags granted by unlocked skills -> IRPGTagReceiver. */
+    void PushTags(AActor* Target);
+    
     UPROPERTY(SaveGame)
     int32 Level = 1;
 

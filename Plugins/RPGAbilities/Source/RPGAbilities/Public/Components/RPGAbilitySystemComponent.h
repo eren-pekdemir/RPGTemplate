@@ -6,12 +6,13 @@
 #include "AbilitySystemComponent.h"
 #include "Attributes/RPGAttributeSet.h"
 #include "Interfaces/RPGStatReceiver.h"
+#include "Interfaces/RPGTagReceiver.h"
 #include "RPGAbilitySystemComponent.generated.h"
 
 class URPGGameplayAbility;
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
-class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent , public IRPGStatReceiver
+class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemComponent , public IRPGStatReceiver, public IRPGTagReceiver
 {
 	GENERATED_BODY()
 
@@ -39,6 +40,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable) 
 	void AbilityInputTagReleased(FGameplayTag InputTag);
+	
+	UFUNCTION() 
+	virtual void SetGrantedTags(const UObject* Source, const FGameplayTagContainer& Tags) override;
 
 protected:
 	// Called when the game starts
@@ -53,4 +57,8 @@ private:
 	TMap<TWeakObjectPtr<const UObject>, FActiveGameplayEffectHandle> StatModifierHandles;
 	
 	void GrantDefaultAbilities();
+	
+	TMap<TWeakObjectPtr<const UObject>, FGameplayTagContainer> GrantedTagsBySource;
+	
+	
 };
