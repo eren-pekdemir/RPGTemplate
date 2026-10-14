@@ -16,7 +16,7 @@ character mesh, stat modifiers, and an equipment panel that shares the inventory
 
 ```
 Plugins/
-├── RPGCore/                          Item definition, IRPGItemContainer, IRPGItemTooltip, FRPGStatModifier, slot & stat tags
+├── RPGCore/                          Item definition, IRPGItemContainer, IRPGItemTooltip, IRPGStatReceiver, FRPGStatModifier, slot & stat tags
 └── RPGEquipment/
     ├── RPGEquipment   (Runtime)      Equipment fragment, equipment component, visuals component, result enum
     └── RPGEquipmentUI (Runtime)      Equipment slot / panel widgets (UMG)
@@ -159,6 +159,14 @@ Items are never lost or duplicated, even when the container is full:
 Stats are **computed on request** from the equipped items. There is no cached total that could get out of sync.
 With at most a handful of slots this is cheap, and it means equipment never needs to know who reads the stats.
 
+### Applying stats: `IRPGStatReceiver`
+
+After every slot change, `SetSlotItem` sends a **snapshot** of all equipped modifiers to the owner's
+`IRPGStatReceiver` (found with `URPGCoreStatics::FindStatReceiver`), **before** broadcasting `OnEquipmentChanged`,
+so listeners already see the final stats. In the template the receiver is the GAS ability system component, which
+applies the snapshot as one infinite effect (see [Abilities](Abilities.md#5-equipment--stats-bridge)).
+Without a receiver nothing happens: equipment works the same on a character that has no stats system.
+
 ---
 
 ## 4. `URPGEquipmentVisualsComponent`
@@ -298,7 +306,6 @@ Later, the same `OnEntryActivated` can drink a potion or read a book without cha
 - No data validation yet: stackable equipment, a missing `AttachSocket`, or a socket that does not exist on the
   skeleton are not reported (planned: `IsDataValid` on the fragment and a socket-exists warning in the visuals component).
 - No two-handed weapons or slot blocking (e.g. a two-hander occupying `OffHand`).
-- Stats are only calculated, not applied; the Abilities & Stats (GAS) system will consume `GetAllStatModifiers`.
 - Meshes are loaded synchronously the first time an item is equipped.
 - The stats text is not sorted; line order follows the map.
 - No drag & drop between inventory and equipment; equipping is by double-click.
