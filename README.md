@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core, Interaction, Inventory and Equipment are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction, Inventory, Equipment and Abilities & Stats are complete; the remaining systems are planned below.
 
 ---
 
@@ -14,11 +14,11 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 
 | System | Plugin | Status |
 |---|---|---|
-| Core (tags, interfaces, item data model, stat modifiers) | `RPGCore` | ✅ |
+| Core (tags, interfaces, item data model, stat modifiers, stat receiver) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
 | **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
 | **Equipment** (tag-based slots, safe swaps, attached meshes, stat modifiers, equipment panel) | `RPGEquipment` | ✅ |
-| Abilities & Stats (GAS) | `RPGAbilities` | ⏳ |
+| **Abilities & Stats** (GAS: health / stamina / combat attributes, damage pipeline, melee & dodge, HUD bars) | `RPGAbilities` | ✅ |
 | Progression (XP, level, skill tree) | `RPGProgression` | ⏳ |
 | Loot & Rarity | `RPGLoot` | ⏳ |
 | Crafting | `RPGCrafting` | ⏳ |
@@ -40,6 +40,8 @@ graph BT
     InventoryUI["RPGInventoryUI"]
     Equipment["RPGEquipment"]
     EquipmentUI["RPGEquipmentUI"]
+    Abilities["RPGAbilities<br/><i>GAS</i>"]
+    AbilitiesUI["RPGAbilitiesUI"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
@@ -49,10 +51,13 @@ graph BT
     InventoryUI --> Inventory
     Equipment --> Core
     EquipmentUI --> Equipment
+    Abilities --> Core
+    AbilitiesUI --> Abilities
     Other --> Core
     Game --> InteractionUI
     Game --> InventoryUI
     Game --> EquipmentUI
+    Game --> AbilitiesUI
     Game --> Other
 ```
 
@@ -60,7 +65,7 @@ graph BT
 
 - **System plugins depend only on `RPGCore`** (and engine modules), never on each other.
   The rule is enforced by the compiler: a system cannot `#include` another system because it is not in its `Build.cs`.
-- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, ...),
+- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, `IRPGStatReceiver`, ...),
   delegates and Gameplay Tags defined in `RPGCore`.
 - **Runtime logic and UI are separate modules.** Core gameplay modules never depend on UMG, so a dedicated
   server or a game with its own UI can drop the UI module.
@@ -191,7 +196,8 @@ attach meshes to the character, and add stat modifiers. Equipment does not depen
   `ERPGEquipResult` (`ContainerFull`, `NoValidSlot`, ...)
 - **Visuals component:** static meshes attach to sockets, skeletal meshes follow the body via Leader Pose;
   no collision, so they never block interaction traces
-- **Stat modifiers** (`Stat.Damage`, `Stat.Armor`, ...) computed on demand, ready for the GAS stats system
+- **Stat modifiers** (`Stat.Damage`, `Stat.Armor`, ...) pushed as a snapshot to any `IRPGStatReceiver`
+  (the GAS ability system component applies them as an effect)
 - **Equipment panel:** freely laid-out slots, live stats, double-click to unequip,
   **double-click in the inventory to equip**
 - **Shared tooltip** through the RPGCore `IRPGItemTooltip` interface, so the two UI modules never depend on each other
@@ -203,6 +209,38 @@ attach meshes to the character, and add stat modifiers. Equipment does not depen
 3. **Skeleton** → add the sockets your items use (e.g. `weapon_r`).
 4. **UI** → `WBP_EquipmentSlot` / `WBP_EquipmentPanel` from the `RPGEquipmentUI` bases, set each slot's
    `Slot Tag`, place the panel in the inventory screen and wire `On Entry Activated → Equip From Container`.
+
+---
+
+## Abilities & Stats System (GAS)
+
+Health, stamina and combat stats on Unreal's Gameplay Ability System, with a damage pipeline, equipment bonuses,
+input-driven abilities with cost and cooldown, death handling and generic HUD bars.
+
+📖 **Full documentation:** [`docs/systems/Abilities.md`](docs/systems/Abilities.md)
+
+### Features
+
+- **Attribute sets:** Health / MaxHealth, Stamina / MaxStamina, Damage / Armor, with clamping for every kind of
+  effect and an `IncomingDamage` meta attribute
+- **Data-driven setup:** attribute sets, starting values, passive effects and abilities are chosen on the component;
+  starting values come from a gameplay effect, not from code
+- **Damage pipeline:** one `GE_Damage` with an execution, `attacker Damage + ability base damage - target Armor`
+  (with a minimum), so the same effect works for every weapon and target
+- **Equipment bridge:** equipment pushes its modifiers through the RPGCore `IRPGStatReceiver` interface; the ASC
+  applies them as one SetByCaller effect per source. Neither plugin depends on the other
+- **Abilities:** input-tag routing (keyboard, gamepad or AI), melee attack (montage or delay, sphere sweep, one hit per
+  target), dodge with stamina **cost** and **cooldown** as plain effects, regenerating stamina via a periodic effect
+- **Health component:** `OnHealthChanged` / `OnDeath` with the instigator; `State.Dead` blocks all abilities
+- **Generic attribute bar** widget: pick any value / max pair per instance; follows the possessed pawn
+
+### Quick start
+
+1. **Pawn** → add **`RPG Ability System`** (attribute sets, `GE_InitStats`, `GE_StaminaRegen`, abilities,
+   `GE_StatModifiers`) and **`RPG Health`**.
+2. **Input** → call `Ability Input Tag Pressed` with `InputTag.Attack` / `InputTag.Dodge`.
+3. **HUD** → `WBP_AttributeBar` instances in a HUD widget; choose `Value Attribute` / `Max Attribute`.
+4. **Debug** → `showdebug abilitysystem`.
 
 ---
 
