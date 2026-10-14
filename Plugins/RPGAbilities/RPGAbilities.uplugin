@@ -19,9 +19,22 @@
 			"Name": "RPGAbilities",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RPGAbilitiesUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RPGAbilitiesUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
-		{ "Name": "GameplayAbilities", "Enabled": true }
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		}
 	]
 }
