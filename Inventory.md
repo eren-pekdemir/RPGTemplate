@@ -205,7 +205,7 @@ Optional widgets may be left out of the WBP; the code checks for them and simply
 | **Grid** | Slot widgets are created once (`MaxSlots`) and reused; any inventory event triggers a full refresh (cheap for ~30 slots, and never out of sync) |
 | **Stack count** | Shown only when `Quantity > 1` |
 | **Right-click** | Drops 1 unit; **Shift + right-click** drops the whole stack. A fast second right-click (which Slate reports as a double-click) is treated as another right-click |
-| **Double-click** | Broadcasts `OnEntryActivated(Entry)` on the screen. The inventory does not decide what it means; the game layer does (the template equips the item, see [Equipment](Equipment.md)) |
+| **Double-click** | Broadcasts `OnEntryActivated(Entry)` on the screen. The inventory does not decide what it means; the game layer does (the template reads recipe scrolls, see [Crafting](Crafting.md), and otherwise equips the item, see [Equipment](Equipment.md)) |
 | **Tabs** | `SetFilter(Tag)` on the screen; the grid shows only entries whose `ItemType` matches the tag **hierarchically** (`Item.Type.Weapon` also shows `Item.Type.Weapon.Sword`). Empty tag = all |
 | **Weight bar** | Fill = current / max; `OverweightColor` when over the limit; hidden when `bUseWeight` is off |
 | **Rarity** | `RarityFrame` is tinted with the rarity colour, set on both the fill (`SetEntry`) and the empty path (`ClearSlot`) |

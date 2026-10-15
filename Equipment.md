@@ -259,7 +259,8 @@ Event On Initialized
 ```
 
 Binding on every open picks up the current pawn, so respawning or possessing another character just works.
-Later, the same `OnEntryActivated` can drink a potion or read a book without changing the inventory plugin.
+The same `OnEntryActivated` now reads recipe scrolls first (see [Crafting](Crafting.md)) and only equips when the
+item teaches nothing; potions can be added the same way without changing the inventory plugin.
 
 ---
 
