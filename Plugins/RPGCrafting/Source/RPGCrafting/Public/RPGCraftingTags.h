@@ -1,0 +1,15 @@
+﻿#pragma once
+
+#include "NativeGameplayTags.h"
+
+namespace RPGTags
+{
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Station_Forge);
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Station_Workbench);
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Station_Alchemy);
+
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Category_Weapons);
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Category_Armor);
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Category_Consumables);
+	RPGCRAFTING_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Crafting_Category_Materials);
+}

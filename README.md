@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core, Interaction, Inventory, Equipment, Abilities & Stats, Progression and Loot & Rarity are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction, Inventory, Equipment, Abilities & Stats, Progression, Loot & Rarity and Crafting are complete; the remaining systems are planned below.
 
 ---
 
@@ -14,14 +14,14 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 
 | System | Plugin | Status |
 |---|---|---|
-| Core (tags, interfaces, item data model, rarity settings, stat modifiers, stat & tag receivers) | `RPGCore` | ✅ |
+| Core (tags, interfaces, item data model, item quantity, rarity settings, stat modifiers, stat & tag receivers) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
 | **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
 | **Equipment** (tag-based slots, safe swaps, attached meshes, stat modifiers, equipment panel) | `RPGEquipment` | ✅ |
 | **Abilities & Stats** (GAS: health / stamina / combat attributes, damage pipeline, melee & dodge, HUD bars) | `RPGAbilities` | ✅ |
 | **Progression** (XP & levels, stat growth, skill tree with prerequisites, skill-gated abilities, kill rewards, tree UI) | `RPGProgression` | ✅ |
 | **Loot & Rarity** (project-wide rarity, weighted & nested loot tables, drop-rate simulation, drops & chests, rarity visuals) | `RPGLoot` | ✅ |
-| Crafting | `RPGCrafting` | ⏳ |
+| **Crafting** (data recipes, all-or-nothing transactions, stations, skill-gated recipes, timed crafting, recipe scrolls, crafting screen) | `RPGCrafting` | ✅ |
 | Market / Economy | `RPGEconomy` | ⏳ |
 | Faction & Reputation | `RPGFaction` | ⏳ |
 | Dialogue (+ graph editor) | `RPGDialogue` | ⏳ |
@@ -45,6 +45,8 @@ graph BT
     Progression["RPGProgression"]
     ProgressionUI["RPGProgressionUI"]
     Loot["RPGLoot"]
+    Crafting["RPGCrafting"]
+    CraftingUI["RPGCraftingUI"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
@@ -59,6 +61,8 @@ graph BT
     Progression --> Core
     ProgressionUI --> Progression
     Loot --> Core
+    Crafting --> Core
+    CraftingUI --> Crafting
     Other --> Core
     Game --> InteractionUI
     Game --> InventoryUI
@@ -66,6 +70,7 @@ graph BT
     Game --> AbilitiesUI
     Game --> ProgressionUI
     Game --> Loot
+    Game --> CraftingUI
     Game --> Other
 ```
 
@@ -313,6 +318,35 @@ measured with a console command; enemies and chests that drop loot into the worl
 2. **Tables** → `RPGLootTable` assets; verify with `rpg.Loot.Simulate <Table>`.
 3. **Enemy** → **`RPG Loot`** component; `On Death` → `Drop Loot`.
 4. **Chest** → Interactable + `RPG Loot`; `On Interacted` → `Give Loot To (Instigator)`.
+
+---
+
+## Crafting System
+
+Recipes as data, crafting that can never lose or duplicate items, stations, skill-gated recipes, timed crafting and a
+crafting screen. Crafting depends on neither Inventory, Progression nor GAS.
+
+📖 **Full documentation:** [`docs/systems/Crafting.md`](docs/systems/Crafting.md)
+
+### Features
+
+- **Data recipes:** ingredients, several outputs, craft time, category, required station and required tags
+- **All-or-nothing transactions:** take ingredients → give outputs → exact rollback on failure; correct even when
+  removing ingredients frees the space the outputs need
+- **Stations** with hierarchical tags (`Forge.Master` makes every `Forge` recipe); use ends on walking away
+- **Skill-gated recipes without coupling:** a Progression skill grants `Skill.Smithing`; crafting reads it through the
+  engine's `IGameplayTagAssetInterface`
+- **Timed crafting:** batches, progress, cancel with refund; leaving the station cancels station work
+- **Recipe scrolls:** a Recipe fragment on any item; reading is wired to the inventory's activation
+- **Crafting screen:** recipe list in rarity colours, have / need ingredient lines, missing requirements,
+  quantity, progress; opens automatically at a station
+
+### Quick start
+
+1. **Recipes** → `RPGRecipeDefinition` assets.
+2. **Pawn** → **`RPG Crafting`**; **PlayerController** → **`RPG Crafting UI`** + a toggle key.
+3. **Station** → Interactable + **`RPG Crafting Station`**; `On Interacted` → `Begin Use (Instigator)`.
+4. **UI** → `WBP_RecipeEntry` and `WBP_CraftingScreen` from the C++ bases.
 
 ---
 
