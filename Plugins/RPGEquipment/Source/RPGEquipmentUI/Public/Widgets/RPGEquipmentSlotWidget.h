@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> IconImage;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Equipment", meta = (BindWidgetOptional))
+	TObjectPtr<UImage> RarityFrame;
+	
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	
 	UPROPERTY(EditAnywhere, Category = "Equipment|Tooltip", meta = (MustImplement = "/Script/RPGCore.RPGItemTooltip"))
@@ -57,4 +60,6 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UUserWidget> ItemTooltip;
+	
+	void UpdateRarity(const URPGItemDefinition* RarityItem);
 };

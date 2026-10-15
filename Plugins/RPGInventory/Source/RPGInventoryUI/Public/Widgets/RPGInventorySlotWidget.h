@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> QuantityText;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Inventory", meta = (BindWidgetOptional))
+	TObjectPtr<UImage> RarityFrame;
+	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
@@ -70,4 +73,6 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<URPGItemTooltipWidget> ItemTooltip;
+	
+	void UpdateRarity(const URPGItemDefinition* Item);
 };

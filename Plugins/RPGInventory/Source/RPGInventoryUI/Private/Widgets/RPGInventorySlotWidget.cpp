@@ -7,6 +7,7 @@
 #include "Engine/Texture2D.h"
 #include "Items/RPGItemDefinition.h"
 #include "InputCoreTypes.h"
+#include "RPGCoreStatics.h"
 #include "Widgets/RPGItemTooltipWidget.h"
 
 void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
@@ -35,6 +36,7 @@ void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
 		}
 	}
 	
+	UpdateRarity(Entry.Item); 
 	BP_OnSlotUpdated(false);
 	
 	if(ItemTooltipClass && !ItemTooltip)
@@ -51,6 +53,8 @@ void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
 			SetToolTip(ItemTooltip);
 		}
 	}
+	
+
 }
 
 void URPGInventorySlotWidget::ClearSlot()
@@ -63,6 +67,7 @@ void URPGInventorySlotWidget::ClearSlot()
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
+	UpdateRarity(nullptr); 
 	BP_OnSlotUpdated(true);
 	
 	SetToolTip(nullptr);
@@ -118,4 +123,21 @@ FReply URPGInventorySlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& 
 	}
 	
 	return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+}
+
+void URPGInventorySlotWidget::UpdateRarity(const URPGItemDefinition* Item)
+{
+	if (!RarityFrame)
+	{
+		return;
+	}
+
+	if (!Item || !Item->Rarity.IsValid())
+	{
+		RarityFrame->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+
+	RarityFrame->SetColorAndOpacity(URPGCoreStatics::GetItemRarityInfo(Item).Color);
+	RarityFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
 }

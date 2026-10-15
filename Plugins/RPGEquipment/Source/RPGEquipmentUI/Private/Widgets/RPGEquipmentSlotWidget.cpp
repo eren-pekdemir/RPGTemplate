@@ -5,6 +5,7 @@
 #include "Items/RPGItemDefinition.h"
 #include "Components/Image.h"
 #include "InputCoreTypes.h"
+#include "RPGCoreStatics.h"
 #include "Items/RPGItemTooltip.h"
 
 void URPGEquipmentSlotWidget::SetItem(const URPGItemDefinition* NewItem)
@@ -23,6 +24,7 @@ void URPGEquipmentSlotWidget::SetItem(const URPGItemDefinition* NewItem)
 		IconImage->SetVisibility(ESlateVisibility::Hidden);
 	}
 	
+	UpdateRarity(Item);
 	BP_OnSlotUpdated(Item == nullptr);
 	
 	if (!Item)
@@ -64,4 +66,21 @@ FReply URPGEquipmentSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& 
 		return FReply::Handled();
 	}
 	return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+}
+
+void URPGEquipmentSlotWidget::UpdateRarity(const URPGItemDefinition* RarityItem)
+{
+	if (!RarityFrame)
+	{
+		return;
+	}
+
+	if (!RarityItem || !RarityItem->Rarity.IsValid())
+	{
+		RarityFrame->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+
+	RarityFrame->SetColorAndOpacity(URPGCoreStatics::GetItemRarityInfo(RarityItem).Color);
+	RarityFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
 }

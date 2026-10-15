@@ -32,6 +32,8 @@ void URPGInventoryComponent::BeginPlay()
 
 	bSuppressEvents = true;
 	
+	bAddingStartingItems = true;
+	
 	for (const FRPGStartingItem& StartItem : StartingItems)
 	{
 		if (StartItem.Item == nullptr) continue;
@@ -48,6 +50,8 @@ void URPGInventoryComponent::BeginPlay()
 				StartItem.Quantity);
 		}
 	}
+	
+	bAddingStartingItems = false;
 	
 	bSuppressEvents = false;
 	
@@ -174,8 +178,12 @@ int32 URPGInventoryComponent::AddItem(const URPGItemDefinition* Item, int32 Quan
 		}
 	}
 	
-	
+	if (ToAdd > 0 && !bAddingStartingItems)
+	{
+		OnItemsReceived.Broadcast(Item, ToAdd);
+	}
 	return ToAdd;
+	
 }
 
 int32 URPGInventoryComponent::RemoveItem(const URPGItemDefinition* Item, int32 Quantity)

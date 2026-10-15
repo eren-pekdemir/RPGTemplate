@@ -5,6 +5,8 @@
 #include "RPGCoreStatics.h"
 #include "Items/RPGInventoryFragment.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
+#include "RPGCoreStatics.h"
 #include "Items/RPGItemDefinition.h"
 #include "Interfaces/RPGItemContainer.h"
 
@@ -18,6 +20,15 @@ ARPGItemPickup::ARPGItemPickup()
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
+	
+	RarityLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("RarityLight"));
+	RarityLight->SetupAttachment(Mesh);
+	RarityLight->SetRelativeLocation(FVector(0.f, 0.f, 30.f));
+	RarityLight->SetIntensityUnits(ELightUnits::Candelas);
+	RarityLight->SetIntensity(30.f);
+	RarityLight->SetAttenuationRadius(150.f);
+	RarityLight->SetCastShadows(false);   // the expensive part of a light; a glow does not need it
+	RarityLight->SetVisibility(false);
 }
 
 void ARPGItemPickup::OnConstruction(const FTransform& Transform)
@@ -33,6 +44,28 @@ void ARPGItemPickup::OnConstruction(const FTransform& Transform)
 	{
 		Mesh->SetStaticMesh(ItemFragment->WorldMesh.LoadSynchronous());
 	}
+	
+	ApplyRarityVisuals();
+}
+
+void ARPGItemPickup::BeginPlay()
+{
+	Super::BeginPlay();
+	BP_OnRarityApplied(URPGCoreStatics::GetItemRarityInfo(Item), Item && Item->Rarity.IsValid());
+}
+
+void ARPGItemPickup::ApplyRarityVisuals()
+{
+	if (!RarityLight)
+	{
+		return;
+	}
+
+	const FRPGRarityInfo RarityInfo = URPGCoreStatics::GetItemRarityInfo(Item);
+	const bool bGlow = Item && Item->Rarity.IsValid() && RarityInfo.Tier >= MinGlowTier;
+
+	RarityLight->SetLightColor(RarityInfo.Color);
+	RarityLight->SetVisibility(bGlow);
 }
 
 bool ARPGItemPickup::CanInteract_Implementation(AActor* InteractionInstigator) const
@@ -78,6 +111,12 @@ void ARPGItemPickup::Interact_Implementation(AActor* InteractionInstigator)
 	const int32 Added = Container->AddItem(Item ,Quantity);
 	Quantity -= Added;
 	if (Quantity <= 0) Destroy();
+}
+
+void ARPGItemPickup::InitializeWorldItem(const URPGItemDefinition* InItem, int32 InQuantity)
+{
+	Item = InItem;
+	Quantity = FMath::Max(InQuantity, 1);
 }
 
 #undef LOCTEXT_NAMESPACE
