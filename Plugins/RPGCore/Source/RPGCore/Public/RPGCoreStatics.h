@@ -9,6 +9,7 @@
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "Components/ActorComponent.h"
+#include "Items/RPGRaritySettings.h"
 #include "RPGCoreStatics.generated.h"
 
 class IRPGItemContainer;
@@ -59,4 +60,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RPG|Currency")
 	static bool SpendCurrency(AActor* Target, FGameplayTag CurrencyTag, int64 Amount);
+	
+	UFUNCTION(BlueprintPure, Category = "RPG|Rarity")
+	static FRPGRarityInfo GetRarityInfo(FGameplayTag Rarity);
+
+	UFUNCTION(BlueprintPure, Category = "RPG|Rarity")
+	static FRPGRarityInfo GetItemRarityInfo(const URPGItemDefinition* Item);
 };

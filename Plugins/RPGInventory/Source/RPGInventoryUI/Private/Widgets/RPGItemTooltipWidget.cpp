@@ -2,6 +2,8 @@
 
 
 #include "Widgets/RPGItemTooltipWidget.h"
+
+#include "RPGCoreStatics.h"
 #include "RPGInventoryTypes.h"
 #include "Items/RPGItemDefinition.h"
 #include "Components/TextBlock.h"
@@ -19,6 +21,19 @@ void URPGItemTooltipWidget::SetTooltipItem_Implementation(const URPGItemDefiniti
 	if (!Item) return;
 	
 	NameText->SetText(Item->DisplayName);
+	
+	const FRPGRarityInfo RarityInfo = URPGCoreStatics::GetItemRarityInfo(Item);
+
+	// Always set: the tooltip is reused, a previous Legendary must not leave the name orange.
+	NameText->SetColorAndOpacity(FSlateColor(RarityInfo.Color));
+
+	if (RarityText)
+	{
+		const bool bShowRarity = Item->Rarity.IsValid() && !RarityInfo.DisplayName.IsEmpty();
+		RarityText->SetText(bShowRarity ? RarityInfo.DisplayName : FText::GetEmpty());
+		RarityText->SetColorAndOpacity(FSlateColor(RarityInfo.Color));
+		RarityText->SetVisibility(bShowRarity ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	}
 	
 	if (DescriptionText)
 	{

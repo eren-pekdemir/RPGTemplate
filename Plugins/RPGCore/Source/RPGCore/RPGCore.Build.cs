@@ -28,7 +28,8 @@ public class RPGCore : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
-				"GameplayTags"
+				"GameplayTags",
+				"DeveloperSettings"
 			}
 			);
 			

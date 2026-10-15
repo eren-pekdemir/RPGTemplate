@@ -16,7 +16,7 @@ tooltips and a weight bar. The logic is **list-based**; the grid exists only in 
 
 ```
 Plugins/
-├── RPGCore/                         Item definition, fragment base, IRPGItemContainer, IRPGInteractable
+├── RPGCore/                         Item definition, fragment base, IRPGItemContainer, IRPGInteractable, IRPGWorldItem, rarity settings
 └── RPGInventory/
     ├── RPGInventory   (Runtime)     Inventory component, inventory fragment, item pickup, entry types
     └── RPGInventoryUI (Runtime)     Slot / grid / screen / tooltip widgets, inventory UI component (UMG)
@@ -24,7 +24,7 @@ Plugins/
 
 | Module | Depends on | Why |
 |---|---|---|
-| `RPGInventory` | `RPGCore`, `GameplayTags` | Implements `IRPGItemContainer` and `IRPGInteractable` |
+| `RPGInventory` | `RPGCore`, `GameplayTags` | Implements `IRPGItemContainer`, `IRPGInteractable` and `IRPGWorldItem` |
 | `RPGInventoryUI` | `RPGInventory`, `RPGCore`, `UMG`, `GameplayTags` (+ private `Slate`, `SlateCore`, `InputCore`) | Displays inventory state |
 
 `RPGInventory` has **no dependency on `RPGInteraction`**. The pickup implements the `IRPGInteractable` contract
@@ -39,6 +39,9 @@ from RPGCore, so the inventory compiles and works even if the Interaction plugin
 A Primary Data Asset: `DisplayName`, `Description`, `Icon`, `ItemType` (Gameplay Tag), `Rarity`, `ItemTags`,
 `MaxStackSize` and a list of **fragments**. Systems attach their own data to items through fragments, so RPGCore
 never needs to know about inventory, equipment or crafting.
+
+`Rarity` is an `Item.Rarity.*` tag whose colour, name and tier come from *Project Settings → RPG Rarity*
+(see [Loot & Rarity](Loot.md)).
 
 ### `URPGInventoryFragment`
 
@@ -102,6 +105,7 @@ through `URPGCoreStatics::FindItemContainer` without knowing the concrete class.
 | `OnItemRemoved(Entry, RemovedQuantity)` | Once per stack that lost items |
 | `OnWeightChanged(NewWeight, MaxWeight)` | Only when the weight actually changes |
 | `OnInventoryRefreshed` | Bulk changes (starting items, later: loading a save) |
+| `OnItemsReceived(Item, Quantity)` | Once per `AddItem` call with the **net** amount added (12 tried, 10 fitted → 10). Not fired for starting items. Used by pickup notifications |
 
 ### How adding works
 
@@ -136,12 +140,15 @@ Items without an inventory fragment, or with `bCanBeDropped = false`, cannot be 
 
 ## 4. `ARPGItemPickup`
 
-An actor implementing `IRPGInteractable`.
+An actor implementing `IRPGInteractable` and `IRPGWorldItem` (so loot can spawn it without knowing the class).
 
 | Property | Description |
 |---|---|
 | `Item`, `Quantity` | `ExposeOnSpawn`, so they appear as pins on *Spawn Actor from Class* |
 | `Mesh` | Root static mesh; its mesh is taken from the fragment's `WorldMesh` in `OnConstruction` (editor preview) |
+| `FallbackMesh` | Used (with a warning) when the item has no `WorldMesh`, so a pickup is never invisible |
+| `RarityLight`, `MinGlowTier` | Shadowless point light in the rarity colour for items of `MinGlowTier` (default Rare) and above |
+| `BP_OnRarityApplied(Info, bHasRarity)` | Called on `BeginPlay` for richer effects (beam, particles) |
 
 | Interaction | Behaviour |
 |---|---|
@@ -182,10 +189,12 @@ All widgets are abstract C++ bases; designers build the look in Widget Blueprint
 
 | Class | Required widgets | Optional widgets | Designer hooks |
 |---|---|---|---|
-| `URPGInventorySlotWidget` | `IconImage` | `QuantityText` | `BP_OnSlotUpdated(bIsEmpty)`, `BP_OnHoverChanged(bHovered)` |
+| `URPGInventorySlotWidget` | `IconImage` | `QuantityText`, `RarityFrame` | `BP_OnSlotUpdated(bIsEmpty)`, `BP_OnHoverChanged(bHovered)` |
 | `URPGInventoryGridWidget` | `SlotGrid` (Uniform Grid Panel) | — | — |
 | `URPGInventoryScreenWidget` | `InventoryGrid` | `WeightBar`, `WeightText` | `BP_OnOpened`, `BP_OnClosed`, `BP_OnFilterChanged(Tag)`, `OnEntryActivated(Entry)` |
-| `URPGItemTooltipWidget` | `NameText` | `DescriptionText`, `WeightText` | `BP_OnItemSet(Item)` (e.g. rarity colour); implements `IRPGItemTooltip` |
+| `URPGItemTooltipWidget` | `NameText` | `DescriptionText`, `WeightText`, `RarityText` | `BP_OnItemSet(Item)`; implements `IRPGItemTooltip`. The name is coloured by rarity |
+| `URPGItemNotificationWidget` | `EntryBox` (Vertical Box) | — | `EntryClass`, `MaxEntries`; follows the possessed pawn's inventory |
+| `URPGItemNotificationEntryWidget` | `MessageText` | `IconImage` | `DisplayTime`, `FadeTime`, `BP_OnQuantityChanged` |
 
 Optional widgets may be left out of the WBP; the code checks for them and simply skips that feature.
 
@@ -199,7 +208,9 @@ Optional widgets may be left out of the WBP; the code checks for them and simply
 | **Double-click** | Broadcasts `OnEntryActivated(Entry)` on the screen. The inventory does not decide what it means; the game layer does (the template equips the item, see [Equipment](Equipment.md)) |
 | **Tabs** | `SetFilter(Tag)` on the screen; the grid shows only entries whose `ItemType` matches the tag **hierarchically** (`Item.Type.Weapon` also shows `Item.Type.Weapon.Sword`). Empty tag = all |
 | **Weight bar** | Fill = current / max; `OverweightColor` when over the limit; hidden when `bUseWeight` is off |
-| **Tooltip** | Name, description and total stack weight; lines with no data are hidden. The widget implements the RPGCore `IRPGItemTooltip` interface, so other UI modules (equipment) reuse it without depending on `RPGInventoryUI` |
+| **Rarity** | `RarityFrame` is tinted with the rarity colour, set on both the fill (`SetEntry`) and the empty path (`ClearSlot`) |
+| **Notifications** | "+6 Arrow" in the rarity colour; repeats of the same item merge and restart the timer; lines fade out and remove themselves |
+| **Tooltip** | Name (in the rarity colour), rarity, description and total stack weight; lines with no data are hidden. The widget implements the RPGCore `IRPGItemTooltip` interface, so other UI modules (equipment) reuse it without depending on `RPGInventoryUI` |
 
 Because slots store the **`EntryId`**, right-click drop is correct in filtered views where slot index ≠ entry index.
 
@@ -269,6 +280,7 @@ other.
 ## 8. Known Limitations / Next Steps
 
 - No asset data validation yet (planned: missing icon, `MaxStackSize < 1`, droppable item without `WorldMesh`).
+  Until then, `FallbackMesh` makes a missing `WorldMesh` visible in game.
 - `WorldMesh` is loaded synchronously; large meshes may hitch the first time they are dropped.
 - `DropEntry` uses the owner's location — the component assumes it sits on an actor placed in the world (a pawn).
 - No drag & drop, sorting or splitting stacks yet.

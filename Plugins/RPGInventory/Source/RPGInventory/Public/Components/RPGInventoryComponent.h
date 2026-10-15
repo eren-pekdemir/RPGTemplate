@@ -14,6 +14,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemAddedSignature, con
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemRemovedSignature, const FRPGItemEntry&, Entry, int32, RemovedQuantity);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryWeightChangedSignature, float, NewWeight, float , MaxWeight);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryRefreshedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnItemsReceivedSignature,
+	const URPGItemDefinition*, Item, int32, Quantity);
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
 class RPGINVENTORY_API URPGInventoryComponent : public UActorComponent , public IRPGItemContainer
@@ -35,6 +37,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryRefreshedSignature OnInventoryRefreshed;
+	
+	UPROPERTY(BlueprintAssignable, Category = "RPG|Inventory")
+	FRPGOnItemsReceivedSignature OnItemsReceived;
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory" , meta = (ClampMin = 1))
 	int32 MaxSlots = 30;
@@ -101,4 +106,6 @@ private:
 	int32 FindEntryIndex(FGuid EntryId) const;
 	
 	bool bSuppressEvents = false;
+	
+	bool bAddingStartingItems = false;
 };

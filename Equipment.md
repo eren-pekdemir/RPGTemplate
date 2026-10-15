@@ -212,7 +212,7 @@ graph LR
 
 | Class | Required widgets | Optional widgets | Designer hooks / settings |
 |---|---|---|---|
-| `URPGEquipmentSlotWidget` | `IconImage` | — | `SlotTag` (per instance), `ItemTooltipClass`, `BP_OnSlotUpdated(bIsEmpty)` |
+| `URPGEquipmentSlotWidget` | `IconImage` | `RarityFrame` | `SlotTag` (per instance), `ItemTooltipClass`, `BP_OnSlotUpdated(bIsEmpty)` |
 | `URPGEquipmentPanelWidget` | — | `StatsText` | `SetEquipment(Component)` |
 
 ### Behaviour
@@ -224,6 +224,7 @@ graph LR
 | **Stats** | One line per stat, using the last part of the tag: `Damage: 15` |
 | **Unequip** | Double-click a filled slot |
 | **Tooltip** | Same tooltip as the inventory; hidden on empty slots |
+| **Rarity** | `RarityFrame` is tinted from `URPGCoreStatics::GetItemRarityInfo` and hidden when the slot is empty. It is updated **before** the empty-slot early return in `SetItem` |
 
 ### Shared tooltip: `IRPGItemTooltip`
 

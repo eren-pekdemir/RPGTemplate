@@ -6,7 +6,7 @@ Every gameplay system lives in its own plugin and talks to the others only throu
 (Gameplay Tags, interfaces and delegates). Systems can be enabled, disabled or replaced independently,
 and designers build content (interactables, items, styles, UI) in the editor without touching C++.
 
-> **Status:** Work in progress. Core, Interaction, Inventory, Equipment, Abilities & Stats and Progression are complete; the remaining systems are planned below.
+> **Status:** Work in progress. Core, Interaction, Inventory, Equipment, Abilities & Stats, Progression and Loot & Rarity are complete; the remaining systems are planned below.
 
 ---
 
@@ -14,13 +14,13 @@ and designers build content (interactables, items, styles, UI) in the editor wit
 
 | System | Plugin | Status |
 |---|---|---|
-| Core (tags, interfaces, item data model, stat modifiers, stat & tag receivers) | `RPGCore` | ✅ |
+| Core (tags, interfaces, item data model, rarity settings, stat modifiers, stat & tag receivers) | `RPGCore` | ✅ |
 | **Interaction** (focus, hold-to-interact, highlight, prompt UI) | `RPGInteraction` | ✅ |
 | **Inventory** (stacking, weight, pickups, drop, grid UI with tabs & tooltips) | `RPGInventory` | ✅ |
 | **Equipment** (tag-based slots, safe swaps, attached meshes, stat modifiers, equipment panel) | `RPGEquipment` | ✅ |
 | **Abilities & Stats** (GAS: health / stamina / combat attributes, damage pipeline, melee & dodge, HUD bars) | `RPGAbilities` | ✅ |
 | **Progression** (XP & levels, stat growth, skill tree with prerequisites, skill-gated abilities, kill rewards, tree UI) | `RPGProgression` | ✅ |
-| Loot & Rarity | `RPGLoot` | ⏳ |
+| **Loot & Rarity** (project-wide rarity, weighted & nested loot tables, drop-rate simulation, drops & chests, rarity visuals) | `RPGLoot` | ✅ |
 | Crafting | `RPGCrafting` | ⏳ |
 | Market / Economy | `RPGEconomy` | ⏳ |
 | Faction & Reputation | `RPGFaction` | ⏳ |
@@ -44,6 +44,7 @@ graph BT
     AbilitiesUI["RPGAbilitiesUI"]
     Progression["RPGProgression"]
     ProgressionUI["RPGProgressionUI"]
+    Loot["RPGLoot"]
     Other["... other systems (planned)"]
     Game["Game module<br/><i>wires systems together</i>"]
 
@@ -57,12 +58,14 @@ graph BT
     AbilitiesUI --> Abilities
     Progression --> Core
     ProgressionUI --> Progression
+    Loot --> Core
     Other --> Core
     Game --> InteractionUI
     Game --> InventoryUI
     Game --> EquipmentUI
     Game --> AbilitiesUI
     Game --> ProgressionUI
+    Game --> Loot
     Game --> Other
 ```
 
@@ -70,7 +73,7 @@ graph BT
 
 - **System plugins depend only on `RPGCore`** (and engine modules), never on each other.
   The rule is enforced by the compiler: a system cannot `#include` another system because it is not in its `Build.cs`.
-- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, `IRPGStatReceiver`, `IRPGTagReceiver`, ...),
+- **Cross-system communication** goes through interfaces (`IRPGInteractable`, `IRPGItemContainer`, `IRPGWorldItem`, `IRPGStatReceiver`, `IRPGTagReceiver`, ...),
   delegates and Gameplay Tags defined in `RPGCore`.
 - **Runtime logic and UI are separate modules.** Core gameplay modules never depend on UMG, so a dedicated
   server or a game with its own UI can drop the UI module.
@@ -279,6 +282,37 @@ so it does not depend on GAS.
 2. **Skills** → `RPGSkillDefinition` assets and one `RPGSkillTreeDefinition` with node positions.
 3. **Enemies** → **`RPG Experience Reward`**; `On Death` → `Grant Reward (Killer)`.
 4. **UI** → `WBP_ExperienceBar` in the HUD; `WBP_SkillNode` / `WBP_SkillTree` and a toggle key on the PlayerController.
+
+---
+
+## Loot & Rarity System
+
+Rarity defined once for the whole project and shown everywhere; weighted, nestable loot tables whose drop rates are
+measured with a console command; enemies and chests that drop loot into the world or straight into the inventory.
+
+📖 **Full documentation:** [`docs/systems/Loot.md`](docs/systems/Loot.md)
+
+### Features
+
+- **Project-wide rarity:** `Item.Rarity.*` tags with colour, name and tier in *Project Settings*; coloured slot frames,
+  tooltip names, glowing world pickups and pickup notifications all read the same data
+- **Loot tables:** weights instead of percentages, "nothing" weight, guaranteed drops, min / max rolls, quantity
+  ranges and **nested tables**; per-roll chances shown live in the editor; cycle detection in data validation
+- **Deterministic:** every roll uses a seeded `FRandomStream`
+- **`rpg.Loot.Simulate`:** rolls a table 10,000+ times and logs per-kill drop rates, average quantities and rarity,
+  so balance is measured, not guessed
+- **Loot component:** scatter pickups around an enemy (ground-snapped), or give loot directly to a container with
+  leftovers dropped, never lost
+- **No plugin coupling:** loot spawns pickups through the RPGCore `IRPGWorldItem` interface and fills containers
+  through `IRPGItemContainer`
+- **"+6 Arrow" notifications** driven by the inventory, so pickups, chests and rewards share one feed
+
+### Quick start
+
+1. **Rarity** → *Project Settings → Game → RPG Rarity*; set `Rarity` on items.
+2. **Tables** → `RPGLootTable` assets; verify with `rpg.Loot.Simulate <Table>`.
+3. **Enemy** → **`RPG Loot`** component; `On Death` → `Drop Loot`.
+4. **Chest** → Interactable + `RPG Loot`; `On Interacted` → `Give Loot To (Instigator)`.
 
 ---
 

@@ -5,6 +5,7 @@
 #include "Interfaces/RPGCurrencyHolder.h"
 #include "Interfaces/RPGStatReceiver.h"
 #include "Interfaces/RPGTagReceiver.h"
+#include "Items/RPGItemDefinition.h"
 #include "WorldPartition/HLOD/HLODActor.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(RPGCoreStatics)
@@ -57,4 +58,14 @@ bool URPGCoreStatics::SpendCurrency(AActor* Target, FGameplayTag CurrencyTag, in
 {
 	IRPGCurrencyHolder* Holder = FindCurrencyHolder(Target);
 	return (Holder && Amount >= 0) ? Holder->SpendCurrency(CurrencyTag, Amount) : false;
+}
+
+FRPGRarityInfo URPGCoreStatics::GetRarityInfo(FGameplayTag Rarity)
+{
+	return GetDefault<URPGRaritySettings>()->GetRarityInfo(Rarity);
+}
+
+FRPGRarityInfo URPGCoreStatics::GetItemRarityInfo(const URPGItemDefinition* Item)
+{
+	return GetRarityInfo(Item ? Item->Rarity : FGameplayTag());
 }
