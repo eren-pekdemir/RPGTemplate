@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/RPGInteractable.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGInteractionTypes.h"
 #include "RPGInteractableComponent.generated.h"
 
@@ -13,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnInteractedSignature, AActor*, 
 
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
-class RPGINTERACTION_API URPGInteractableComponent : public UActorComponent , public IRPGInteractable
+class RPGINTERACTION_API URPGInteractableComponent : public UActorComponent , public IRPGInteractable, public IRPGSaveable
 {
 	GENERATED_BODY()
 
@@ -31,7 +32,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (ClampMin = "0.0", Units = "s"))
 	float HoldDuration = 0.f;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	/** Saved (with a RPGSaveableActorComponent on the actor): a used single-use object stays used after loading. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame, Category = "Interaction")
 	bool bEnabled = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
@@ -46,6 +48,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void SetInteractionEnabled(bool bNewEnabled);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
 	ERPGHighlightStyle HighlightStyle = ERPGHighlightStyle::Default;
 };

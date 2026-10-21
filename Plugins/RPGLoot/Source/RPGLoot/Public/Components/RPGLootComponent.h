@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interfaces/RPGSaveable.h"
 #include "Loot/RPGLootTable.h"
 #include "RPGLootComponent.generated.h"
 
@@ -15,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnLootDroppedSignature,
  * The game layer decides when (on death, on chest open).
  */
 UCLASS(ClassGroup = (RPG), meta = (BlueprintSpawnableComponent))
-class RPGLOOT_API URPGLootComponent : public UActorComponent
+class RPGLOOT_API URPGLootComponent : public UActorComponent, public IRPGSaveable
 {
     GENERATED_BODY()
 
@@ -54,11 +55,12 @@ public:
 private:
     FVector GetDropLocation(int32 Index, int32 Count) const;
     AActor* SpawnPickup(const FRPGLootDrop& Drop, const FVector& Location) const;
-
-    bool bHasLooted = false;
     
     /** Single gate: checks bLootOnce, marks as looted, rolls. */
     bool TryRollLoot(TArray<FRPGLootDrop>& OutDrops);
 
     void SpawnPickups(const TArray<FRPGLootDrop>& Drops) const;
+    
+    UPROPERTY(SaveGame)
+    bool bHasLooted = false;
 };

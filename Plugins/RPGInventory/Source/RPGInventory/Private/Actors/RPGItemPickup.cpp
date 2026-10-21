@@ -6,7 +6,6 @@
 #include "Items/RPGInventoryFragment.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PointLightComponent.h"
-#include "RPGCoreStatics.h"
 #include "Items/RPGItemDefinition.h"
 #include "Interfaces/RPGItemContainer.h"
 
@@ -34,18 +33,15 @@ ARPGItemPickup::ARPGItemPickup()
 void ARPGItemPickup::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-	
-	if (!Item) return;
 
-	const URPGInventoryFragment* ItemFragment = Item->FindFragmentByClass<URPGInventoryFragment>();
-	
-	if (!ItemFragment) return;
-	if (!ItemFragment->WorldMesh.IsNull())
+	// Always: an item without an Inventory fragment still glows, and clearing the item turns the glow off.
+	ApplyRarityVisuals();
+
+	const URPGInventoryFragment* ItemFragment = Item ? Item->FindFragmentByClass<URPGInventoryFragment>() : nullptr;
+	if (ItemFragment && !ItemFragment->WorldMesh.IsNull())
 	{
 		Mesh->SetStaticMesh(ItemFragment->WorldMesh.LoadSynchronous());
 	}
-	
-	ApplyRarityVisuals();
 }
 
 void ARPGItemPickup::BeginPlay()

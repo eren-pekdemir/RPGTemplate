@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Interfaces/RPGItemContainer.h"
 #include "RPGInventoryTypes.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGInventoryComponent.generated.h"
 
 class ARPGItemPickup;
@@ -18,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRPGOnItemsReceivedSignature,
 	const URPGItemDefinition*, Item, int32, Quantity);
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
-class RPGINVENTORY_API URPGInventoryComponent : public UActorComponent , public IRPGItemContainer
+class RPGINVENTORY_API URPGInventoryComponent : public UActorComponent , public IRPGItemContainer, public IRPGSaveable
 {
 	GENERATED_BODY()
 
@@ -87,6 +88,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Drop")
 	int32 DropEntry(FGuid EntryId, int32 Quantity);
+	
+	virtual void OnLoadedFromSave() override;
 
 protected:
 	// Called when the game starts
@@ -94,7 +97,7 @@ protected:
 
 private:
 	
-	UPROPERTY(VisibleInstanceOnly, SaveGame)
+	UPROPERTY(VisibleInstanceOnly, SaveGame, Category = "RPG|Inventory")
 	TArray<FRPGItemEntry> Entries;
 	
 	float CurrentWeight = 0.f;

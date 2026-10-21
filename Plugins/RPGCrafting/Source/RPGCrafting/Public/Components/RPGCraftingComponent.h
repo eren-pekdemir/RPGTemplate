@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "Items/RPGItemQuantity.h"
 #include "RPGCraftingTypes.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGCraftingComponent.generated.h"
 
 class IRPGItemContainer;
@@ -35,7 +36,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnActiveStationChangedSignature,
  * Every single craft is all-or-nothing: items are never lost or duplicated.
  */
 UCLASS(ClassGroup = (RPG), meta = (BlueprintSpawnableComponent))
-class RPGCRAFTING_API URPGCraftingComponent : public UActorComponent
+class RPGCRAFTING_API URPGCraftingComponent : public UActorComponent, public IRPGSaveable
 {
 	GENERATED_BODY()
 
@@ -168,6 +169,9 @@ public:
 	/** Items still to make in the current job, including the one in progress. */
 	UFUNCTION(BlueprintPure, Category = "RPG|Crafting")
 	int32 GetRemainingCount() const { return JobRemaining; }
+
+	// IRPGSaveable
+	virtual void OnLoadedFromSave() override;
 
 protected:
 	virtual void BeginPlay() override;

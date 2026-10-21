@@ -7,7 +7,9 @@
 #include "Components/TextBlock.h"
 #include "RPGEquipmentPanelWidget.generated.h"
 
+class URPGEquipmentComponent;
 class URPGEquipmentSlotWidget;
+class URPGItemDefinition;
 /**
  * 
  */

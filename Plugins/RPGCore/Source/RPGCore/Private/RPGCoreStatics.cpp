@@ -6,7 +6,6 @@
 #include "Interfaces/RPGStatReceiver.h"
 #include "Interfaces/RPGTagReceiver.h"
 #include "Items/RPGItemDefinition.h"
-#include "WorldPartition/HLOD/HLODActor.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(RPGCoreStatics)
 

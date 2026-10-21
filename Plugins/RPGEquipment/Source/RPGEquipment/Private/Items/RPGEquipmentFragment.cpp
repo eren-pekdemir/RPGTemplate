@@ -7,8 +7,8 @@
 
 FGameplayTag URPGEquipmentFragment::GetEquipSlot(const URPGItemDefinition* Item)
 {
-	const URPGEquipmentFragment* EquipmentFragment = Item->FindFragmentByClass<URPGEquipmentFragment>();
-	if (!Item || !EquipmentFragment)
+	const URPGEquipmentFragment* EquipmentFragment = Item ? Item->FindFragmentByClass<URPGEquipmentFragment>() : nullptr;
+	if (!EquipmentFragment)
 	{
 		return FGameplayTag();
 	}

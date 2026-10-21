@@ -1,7 +1,6 @@
 // RPGSaveable.h
-// Contract for anything that persists between sessions.
-// The save system serializes every UPROPERTY marked with the SaveGame specifier,
-// so implementers usually only need GetSaveId() plus optional hooks.
+// Marks a component (or actor) whose UPROPERTY(SaveGame) properties are written to save files by RPGSave.
+// C++-only interface. Both hooks are optional: inheriting the interface is enough to be saved.
 
 #pragma once
 
@@ -20,15 +19,9 @@ class RPGCORE_API IRPGSaveable
 	GENERATED_BODY()
 
 public:
-	/**
-	 * Stable identifier across sessions. Level-placed actors can use their name;
-	 * runtime-spawned objects must store a persistent FGuid.
-	 */
-	virtual FName GetSaveId() const = 0;
+	/** Before the SaveGame properties are written: copy runtime-only state into them if needed. */
+	virtual void OnBeforeSave() {}
 
-	/** Called right before SaveGame properties are serialized. */
-	virtual void OnPreSave() {}
-
-	/** Called after SaveGame properties are restored. Rebuild derived/runtime state here. */
-	virtual void OnPostLoad() {}
+	/** After the SaveGame properties were restored: re-apply derived state and broadcast refresh events. */
+	virtual void OnLoadedFromSave() {}
 };

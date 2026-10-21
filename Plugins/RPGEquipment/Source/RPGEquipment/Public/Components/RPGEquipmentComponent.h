@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "RPGEquipmentTypes.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGEquipmentComponent.generated.h"
 
 class URPGItemDefinition;
@@ -18,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRPGOnEquipmentChangedSignature,
 	const URPGItemDefinition*, OldItem);
 
 UCLASS(ClassGroup=(RPG), meta=(BlueprintSpawnableComponent))
-class RPGEQUIPMENT_API URPGEquipmentComponent : public UActorComponent
+class RPGEQUIPMENT_API URPGEquipmentComponent : public UActorComponent, public IRPGSaveable
 {
 	GENERATED_BODY()
 
@@ -26,10 +27,10 @@ public:
 	// Sets default values for this component's properties
 	URPGEquipmentComponent();
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Equipment")
 	FRPGOnEquipmentChangedSignature OnEquipmentChanged;
-	
-	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Slot"))
+
+	UPROPERTY(EditAnywhere, Category = "Equipment", meta = (Categories = "Equipment.Slot"))
 	FGameplayTagContainer AvailableSlots;
 	
 	UPROPERTY(EditAnywhere, Category = "Equipment")
@@ -61,6 +62,8 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Equipment|Stats")
 	TMap<FGameplayTag, float> GetAllStatModifiers() const;
+	
+	virtual void OnLoadedFromSave() override;
 
 protected:
 	// Called when the game starts

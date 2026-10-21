@@ -89,6 +89,10 @@ void URPGInventoryGridWidget::Refresh()
 	
 	for (const FRPGItemEntry& Entry : Inventory->GetEntries())
 	{
+		if (!Entry.IsValid())
+		{
+			continue;
+		}
 		if (!FilterTag.IsValid() || Entry.Item->ItemType.MatchesTag(FilterTag))
 		{
 			VisibleEntries.Add(Entry);

@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RPG Save",
+	"Description": "Save slots for the player's components and placed world actors (UPROPERTY(SaveGame) based).",
+	"Category": "RPG Template",
+	"CreatedBy": "Eren Pekdemir",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{ "Name": "RPGSave", "Type": "Runtime", "LoadingPhase": "Default" }
+	],
+	"Plugins": [
+		{ "Name": "RPGCore", "Enabled": true }
+	]
+}

@@ -153,10 +153,15 @@ void URPGCraftingUIComponent::CloseCrafting()
 
 	if (APlayerController* PlayerController = GetPlayerController())
 	{
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		PlayerController->SetShowMouseCursor(false);
-		PlayerController->ResetIgnoreLookInput();
-		PlayerController->ResetIgnoreMoveInput();
+		// The ignore flags are counters shared by every screen (inventory, dialogue...): undo only our own +1,
+		// and give control back to the game only when no other screen is still open.
+		PlayerController->SetIgnoreLookInput(false);
+		PlayerController->SetIgnoreMoveInput(false);
+		if (!PlayerController->IsLookInputIgnored())
+		{
+			PlayerController->SetInputMode(FInputModeGameOnly());
+			PlayerController->SetShowMouseCursor(false);
+		}
 	}
 
 	// Leaving the screen = leaving the station.

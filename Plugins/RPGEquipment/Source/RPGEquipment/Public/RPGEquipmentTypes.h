@@ -7,8 +7,8 @@ UENUM(BlueprintType)
 enum class ERPGEquipResult : uint8
 {
 	Success,
-	NoValidSlot,         // item'ın slot'u bu karakterde yok
-	NoContainer,         // owner'da envanter yok
-	ItemNotInContainer,  // oyuncuda bu item yok
-	ContainerFull        // eski item envantere sığmıyor
+	NoValidSlot,         // this character has no slot for the item (or the slot is empty when unequipping)
+	NoContainer,         // the owner has no item container
+	ItemNotInContainer,  // the container does not hold the item
+	ContainerFull        // the old item does not fit back into the container
 };

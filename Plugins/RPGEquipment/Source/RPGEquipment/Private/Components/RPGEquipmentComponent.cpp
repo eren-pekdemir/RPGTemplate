@@ -230,3 +230,24 @@ TMap<FGameplayTag, float> URPGEquipmentComponent::GetAllStatModifiers() const
 	return Result;
 }
 
+void URPGEquipmentComponent::OnLoadedFromSave()
+{
+	// A deleted item asset loads as null, and a slot removed from AvailableSlots can no longer be used: drop both.
+	for (auto It = EquippedItems.CreateIterator(); It; ++It)
+	{
+		if (!It->Value || !HasSlot(It->Key))
+		{
+			UE_LOG(LogRPGEquipment, Warning, TEXT("%s: saved equipment in %s was dropped (missing item or slot)."),
+				*GetNameSafe(GetOwner()), *It->Key.ToString());
+			It.RemoveCurrent();
+		}
+	}
+
+	PushStatModifiers();
+	
+	for (const FGameplayTag& Slot : AvailableSlots)
+	{
+		OnEquipmentChanged.Broadcast(Slot, GetEquippedItem(Slot), nullptr);
+	}
+}
+
