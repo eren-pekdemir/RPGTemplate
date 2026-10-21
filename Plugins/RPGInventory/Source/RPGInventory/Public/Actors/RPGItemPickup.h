@@ -27,9 +27,10 @@ public:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (ExposeOnSpawn = true))
-	TObjectPtr<const URPGItemDefinition> Item = nullptr;;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup", meta = (ExposeOnSpawn = true,ClampMin = 1))
+	TObjectPtr<const URPGItemDefinition> Item = nullptr;
+
+	/** SaveGame: a partly picked-up stack keeps its remainder after loading (needs a RPGSaveableActorComponent). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame, Category = "Pickup", meta = (ExposeOnSpawn = true,ClampMin = 1))
 	int32 Quantity = 1;
 	
 	/** Glow in the item's rarity colour. Hidden for low tiers. */

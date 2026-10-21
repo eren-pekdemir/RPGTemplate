@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGExperienceRewardComponent.generated.h"
 
 /**
@@ -9,7 +10,7 @@
  * the reward is given at most once.
  */
 UCLASS(ClassGroup = (RPG), meta = (BlueprintSpawnableComponent))
-class RPGPROGRESSION_API URPGExperienceRewardComponent : public UActorComponent
+class RPGPROGRESSION_API URPGExperienceRewardComponent : public UActorComponent, public IRPGSaveable
 {
 	GENERATED_BODY()
 
@@ -27,5 +28,7 @@ public:
 	bool HasGrantedReward() const { return bRewardGranted; }
 
 private:
+	UPROPERTY(SaveGame)
 	bool bRewardGranted = false;
+	
 };

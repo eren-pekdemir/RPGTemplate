@@ -21,6 +21,9 @@
 		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
-		}
+		},
+		{ "Name": "RPGFaction",  "Enabled": true },
+		{ "Name": "RPGDialogue", "Enabled": true },
+		{ "Name": "RPGSave",     "Enabled": true }
 	]
 }

@@ -251,3 +251,17 @@ URPGProgressionComponent* URPGProgressionComponent::FindProgressionComponent(con
 
     return PlayerState ? PlayerState->FindComponentByClass<URPGProgressionComponent>() : nullptr;
 }
+
+void URPGProgressionComponent::OnLoadedFromSave()
+{
+    // The save may come from a build with different data: a deleted skill loads as null, MaxLevel may have changed.
+    UnlockedSkills.RemoveAll([](const TObjectPtr<const URPGSkillDefinition>& Skill) { return Skill == nullptr; });
+    Level = FMath::Clamp(Level, 1, MaxLevel);
+    Experience = IsMaxLevel() ? 0 : FMath::Max(Experience, 0);
+    SkillPoints = FMath::Max(SkillPoints, 0);
+
+    // Re-send the stat and skill-tag snapshots to the pawn, then let the UI refresh.
+    PushToTarget();
+    OnExperienceChanged.Broadcast(Experience, GetExperienceToNextLevel());
+    OnSkillPointsChanged.Broadcast(SkillPoints);
+}

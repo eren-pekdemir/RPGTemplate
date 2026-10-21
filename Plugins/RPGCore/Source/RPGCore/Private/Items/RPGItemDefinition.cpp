@@ -48,7 +48,7 @@ EDataValidationResult URPGItemDefinition::IsDataValid(FDataValidationContext& Co
 	}
 	if (MaxStackSize < 1)
 	{
-		Context.AddError(LOCTEXT("MaxStackSize < 0 ", "MaxStack size is zero."));
+		Context.AddError(LOCTEXT("InvalidMaxStackSize", "Max Stack Size must be at least 1."));
 		bHasErrors = true;
 	}
 

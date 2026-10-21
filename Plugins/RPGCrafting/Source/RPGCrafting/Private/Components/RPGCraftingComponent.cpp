@@ -34,6 +34,18 @@ void URPGCraftingComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void URPGCraftingComponent::OnLoadedFromSave()
+{
+	// A deleted recipe asset loads as null.
+	KnownRecipes.RemoveAll([](const TObjectPtr<const URPGRecipeDefinition>& Recipe) { return Recipe == nullptr; });
+
+	// Starting recipes added to the design after the save was made are still known.
+	for (const URPGRecipeDefinition* Recipe : StartingRecipes)
+	{
+		LearnRecipe(Recipe);
+	}
+}
+
 // ===================================================================== Recipes
 
 bool URPGCraftingComponent::LearnRecipe(const URPGRecipeDefinition* Recipe)

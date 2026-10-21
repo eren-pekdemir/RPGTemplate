@@ -49,7 +49,7 @@ namespace RPGTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Currency_Gold, "Currency.Gold", "Primary currency");
 
 	// ---------- Faction ----------
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Faction, "Faction", "Root: faction. Child tags are defined as content in RPGContentTags.ini");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Faction, "Faction", "Root: faction. Child tags are defined as content in DefaultGameplayTags.ini");
 
 	// ---------- Event.Inventory ----------
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Inventory_ItemAdded,   "Event.Inventory.ItemAdded",   "Broadcast when an item is added to a container");

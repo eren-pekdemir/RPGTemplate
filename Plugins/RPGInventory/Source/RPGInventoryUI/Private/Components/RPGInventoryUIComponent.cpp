@@ -86,10 +86,14 @@ void URPGInventoryUIComponent::CloseInventory()
 {
 	if (!bIsOpen || !ScreenWidget) return;
 	ScreenWidget->SetVisibility(ESlateVisibility::Collapsed);
-	PC->SetShowMouseCursor(false);
-	PC->SetInputMode(FInputModeGameOnly());
+	// Ignore flags are counters shared with the other screens: hand control back only when none is open.
 	PC->SetIgnoreLookInput(false);
 	PC->SetIgnoreMoveInput(false);
+	if (!PC->IsLookInputIgnored())
+	{
+		PC->SetShowMouseCursor(false);
+		PC->SetInputMode(FInputModeGameOnly());
+	}
 	bIsOpen = false;
 	ScreenWidget->BP_OnClosed();
 	OnInventoryToggled.Broadcast(false);

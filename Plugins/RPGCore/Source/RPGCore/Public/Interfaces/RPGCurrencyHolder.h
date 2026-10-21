@@ -20,14 +20,14 @@ class RPGCORE_API IRPGCurrencyHolder
 	GENERATED_BODY()
 
 public:
-	virtual int64 GetCurrency(FGameplayTag CurrencyTag) const = 0;
+	virtual int64 GetCurrency(const FGameplayTag& CurrencyTag) const = 0;
 
-	virtual void AddCurrency(FGameplayTag CurrencyTag, int64 Amount) = 0;
+	virtual void AddCurrency(const FGameplayTag& CurrencyTag, int64 Amount) = 0;
 
 	/** Deducts Amount only if affordable. Returns true on success. */
-	virtual bool SpendCurrency(FGameplayTag CurrencyTag, int64 Amount) = 0;
+	virtual bool SpendCurrency(const FGameplayTag& CurrencyTag, int64 Amount) = 0;
 
-	bool CanAfford(FGameplayTag CurrencyTag, int64 Amount) const
+	bool CanAfford(const FGameplayTag& CurrencyTag, int64 Amount) const
 	{
 		return GetCurrency(CurrencyTag) >= Amount;
 	}

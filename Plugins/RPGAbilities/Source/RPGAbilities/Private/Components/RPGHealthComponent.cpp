@@ -50,7 +50,7 @@ void URPGHealthComponent::HandleHealthChanged(const FOnAttributeChangeData& Data
 	{
 		Instigator = Data.GEModData->EffectSpec.GetContext().GetOriginalInstigator();
 	}
-	else if (const URPGHealthSet* HealthSet = AbilitySystem->GetSet<URPGHealthSet>())  // ASC değişkeninin adı neyse
+	else if (const URPGHealthSet* HealthSet = AbilitySystem->GetSet<URPGHealthSet>())   // Health set by the set itself (IncomingDamage): no mod data, the set kept the instigator
 	{
 		Instigator = HealthSet->GetDamageInstigator();
 	}

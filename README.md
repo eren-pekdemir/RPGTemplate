@@ -93,7 +93,7 @@ graph BT
 A complete, extensible interaction framework: the player focuses on an object, the object is highlighted,
 a world-anchored prompt appears, and interacting can be instant or hold-to-interact with a progress bar.
 
-📖 **Full documentation:** [`docs/systems/Interaction.md`](docs/systems/Interaction.md)
+📖 **Full documentation:** [`Interaction.md`](Interaction.md)
 
 ### Features
 
@@ -169,7 +169,7 @@ No C++ required. Custom behaviour (e.g. a prompt that changes between "Open" / "
 A slot- and weight-limited inventory with stacking, world pickups, dropping, and a Witcher-style grid UI.
 The logic is list-based; the grid exists only in the UI.
 
-📖 **Full documentation:** [`docs/systems/Inventory.md`](docs/systems/Inventory.md)
+📖 **Full documentation:** [`Inventory.md`](Inventory.md)
 
 ### Features
 
@@ -198,7 +198,7 @@ The logic is list-based; the grid exists only in the UI.
 Tag-based equipment slots that move items to and from any item container without ever losing or duplicating them,
 attach meshes to the character, and add stat modifiers. Equipment does not depend on the inventory plugin.
 
-📖 **Full documentation:** [`docs/systems/Equipment.md`](docs/systems/Equipment.md)
+📖 **Full documentation:** [`Equipment.md`](Equipment.md)
 
 ### Features
 
@@ -230,7 +230,7 @@ attach meshes to the character, and add stat modifiers. Equipment does not depen
 Health, stamina and combat stats on Unreal's Gameplay Ability System, with a damage pipeline, equipment bonuses,
 input-driven abilities with cost and cooldown, death handling and generic HUD bars.
 
-📖 **Full documentation:** [`docs/systems/Abilities.md`](docs/systems/Abilities.md)
+📖 **Full documentation:** [`Abilities.md`](Abilities.md)
 
 ### Features
 
@@ -263,7 +263,7 @@ Experience, levels and a skill tree on the PlayerState. Enemies grant XP on deat
 growth, and skills add stats or unlock abilities. Progression reaches the character only through RPGCore interfaces,
 so it does not depend on GAS.
 
-📖 **Full documentation:** [`docs/systems/Progression.md`](docs/systems/Progression.md)
+📖 **Full documentation:** [`Progression.md`](Progression.md)
 
 ### Features
 
@@ -295,7 +295,7 @@ so it does not depend on GAS.
 Rarity defined once for the whole project and shown everywhere; weighted, nestable loot tables whose drop rates are
 measured with a console command; enemies and chests that drop loot into the world or straight into the inventory.
 
-📖 **Full documentation:** [`docs/systems/Loot.md`](docs/systems/Loot.md)
+📖 **Full documentation:** [`Loot.md`](Loot.md)
 
 ### Features
 
@@ -326,7 +326,7 @@ measured with a console command; enemies and chests that drop loot into the worl
 Recipes as data, crafting that can never lose or duplicate items, stations, skill-gated recipes, timed crafting and a
 crafting screen. Crafting depends on neither Inventory, Progression nor GAS.
 
-📖 **Full documentation:** [`docs/systems/Crafting.md`](docs/systems/Crafting.md)
+📖 **Full documentation:** [`Crafting.md`](Crafting.md)
 
 ### Features
 

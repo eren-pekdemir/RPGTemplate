@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Stats/RPGStatModifier.h"
 #include "RPGProgressionTypes.h"
+#include "Interfaces/RPGSaveable.h"
 #include "RPGProgressionComponent.generated.h"
 
 class APawn;
@@ -30,7 +31,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRPGOnSkillUnlockedSignature,
  * On any other actor (e.g. an enemy) it targets its owner.
  */
 UCLASS(ClassGroup = (RPG), meta = (BlueprintSpawnableComponent))
-class RPGPROGRESSION_API URPGProgressionComponent : public UActorComponent
+class RPGPROGRESSION_API URPGProgressionComponent : public UActorComponent, public IRPGSaveable
 {
     GENERATED_BODY()
 
@@ -117,6 +118,8 @@ public:
     
     UFUNCTION(BlueprintPure, Category = "RPG|Progression")
     static URPGProgressionComponent* FindProgressionComponent(const AActor* Actor);
+    
+    virtual void OnLoadedFromSave() override;
 
 protected:
     virtual void BeginPlay() override;

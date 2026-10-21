@@ -1,6 +1,6 @@
 ﻿#include "Widgets/RPGItemNotificationWidget.h"
 
-#include "Components/RPGInventoryComponent.h"   // senin yoluna göre
+#include "Components/RPGInventoryComponent.h"
 #include "Components/VerticalBox.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"

@@ -305,7 +305,7 @@ int32 URPGInventoryComponent::DropEntry(FGuid EntryId, int32 Quantity)
 	FRPGItemEntry Entry = Entries[EntryIndex];
 	int32 ToDrop = FMath::Min(Quantity, Entry.Quantity);
 	
-	const URPGInventoryFragment* ItemFragment = Entry.Item->FindFragmentByClass<URPGInventoryFragment>();
+	const URPGInventoryFragment* ItemFragment = Entry.Item ? Entry.Item->FindFragmentByClass<URPGInventoryFragment>() : nullptr;
 	if (!ItemFragment || !ItemFragment->bCanBeDropped) return 0;
 	
 	if (!PickupClass)
@@ -328,5 +328,24 @@ int32 URPGInventoryComponent::DropEntry(FGuid EntryId, int32 Quantity)
 	int32 Removed = RemoveEntry(EntryId, ToDrop);
 	
 	return Removed;
+}
+
+void URPGInventoryComponent::OnLoadedFromSave()
+{
+	// An item asset deleted or renamed since the save loads as null: drop those entries instead of crashing the UI.
+	const int32 InvalidEntries = Entries.RemoveAll([](const FRPGItemEntry& Entry) { return !Entry.IsValid(); });
+	if (InvalidEntries > 0)
+	{
+		UE_LOG(LogRPGInventory, Warning, TEXT("%s: %d saved inventory entries reference missing items and were removed."),
+			*GetNameSafe(GetOwner()), InvalidEntries);
+	}
+
+	// CurrentWeight is not saved: it still reflects the starting items, so rebuild it from the restored entries.
+	// Events are suppressed here and sent once below.
+	bSuppressEvents = true;
+	RecalculateWeight();
+	bSuppressEvents = false;
+	OnInventoryRefreshed.Broadcast();
+	OnWeightChanged.Broadcast(GetCurrentWeight(), MaxWeight);
 }
 

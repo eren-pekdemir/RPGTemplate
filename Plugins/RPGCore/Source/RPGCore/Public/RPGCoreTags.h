@@ -1,6 +1,6 @@
 // RPGCoreTags.h
 // Cross-system native gameplay tags. Only tags that more than one system needs live here.
-// Content tags (specific items, factions, materials) belong in Config/Tags/RPGContentTags.ini.
+// Content tags (specific items, factions, materials) belong in Config/DefaultGameplayTags.ini.
 
 #pragma once
 
