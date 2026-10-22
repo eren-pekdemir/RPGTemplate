@@ -39,6 +39,17 @@ void URPGCraftingComponent::OnLoadedFromSave()
 	// A deleted recipe asset loads as null.
 	KnownRecipes.RemoveAll([](const TObjectPtr<const URPGRecipeDefinition>& Recipe) { return Recipe == nullptr; });
 
+	// The save was made during a timed craft: the job itself is not restored, so give its ingredients back.
+	PendingIngredients.RemoveAll([](const FRPGItemQuantity& Ingredient) { return !Ingredient.IsValid(); });
+	if (!PendingIngredients.IsEmpty() && !IsCrafting())
+	{
+		if (IRPGItemContainer* Container = GetContainer())
+		{
+			Rollback(*Container, PendingIngredients, TArray<FRPGItemQuantity>());
+		}
+		PendingIngredients.Reset();
+	}
+
 	// Starting recipes added to the design after the save was made are still known.
 	for (const URPGRecipeDefinition* Recipe : StartingRecipes)
 	{

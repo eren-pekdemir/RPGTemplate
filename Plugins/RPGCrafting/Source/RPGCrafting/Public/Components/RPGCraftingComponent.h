@@ -207,8 +207,11 @@ private:
 	UPROPERTY()
 	TObjectPtr<const URPGRecipeDefinition> ActiveRecipe;
 
-	/** Ingredients taken for the item in progress; returned on cancel. */
-	UPROPERTY()
+	/**
+	 * Ingredients taken for the item in progress; returned on cancel.
+	 * SaveGame: they are already out of the inventory, so a save made mid-craft keeps them and the load refunds them.
+	 */
+	UPROPERTY(SaveGame)
 	TArray<FRPGItemQuantity> PendingIngredients;
 
 	int32 JobCrafted = 0;

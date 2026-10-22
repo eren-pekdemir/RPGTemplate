@@ -66,6 +66,8 @@ void URPGHealthComponent::HandleDeath(AActor* Killer)
 {
 	bIsDead = true;
 	AbilitySystem->AddLooseGameplayTag(RPGTags::State_Dead);
+	// State.Dead only blocks new activations: a swing already running would still deal its hit.
+	AbilitySystem->CancelAllAbilities();
 	OnDeath.Broadcast(GetOwner(), Killer);
 }
 

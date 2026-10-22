@@ -384,6 +384,10 @@ L_Sandbox'ta: 7 `BP_TestInteractable`, 7 `BP_ItemPickup`, 5 `BP_TrainingDummy`, 
 | 10 | ✅ | `GetEquipSlot` null deref | Düzeltildi |
 | 11 | ✅ | `Modifiers` base fragment'teydi | Her fragment'te (Inventory, Recipe, Value) görünüyordu; `URPGEquipmentFragment`'e taşındı (aynı isim → mevcut asset değerleri korunur) |
 | 12 | ✅ | Temizlik | Türkçe/yanlış yorumlar, gereksiz HLOD include'u, `MaxStackSize` LOCTEXT anahtarı, eksik `Category`'ler, Panel header forward declaration'ları, README doküman linkleri (artık kökteki güncel dosyalara gidiyor) |
+| 12a | ✅ | Zamanlı crafting sırasında kayıt → malzeme kaybı | Malzemeler iş başında envanterden düşülüyor ama kaydedilmiyordu. `PendingIngredients` artık SaveGame (`FRPGItemQuantity` alanları da), yüklemede envantere iade ediliyor *(2. tur)* |
+| 12b | ✅ | Ölünce süren yetenekler devam ediyordu | `State.Dead` sadece yeni aktivasyonu blokluyor; ölü karakterin yarım kalan saldırısı hâlâ vurabiliyordu. `HandleDeath` artık `CancelAllAbilities()` çağırıyor (`OnDeath`'ten önce, ölüm yeteneği etkilenmez) *(2. tur)* |
+| 12c | ✅ | Pawn değişince eski pawn'da bonus kalıyordu | Progression (stat + skill tag) ve Reputation (rank tag) yeni pawn'a iterken bıraktıkları pawn'dan kendi snapshot'larını silmiyordu (binek, possession değişimi) *(2. tur)* |
+| 12d | ✅ | Faction debug komutları Shipping'de açıktı | `rpg.Reputation.*` artık `!UE_BUILD_SHIPPING` altında (Loot ile aynı) *(2. tur)* |
 | 13 | 🟠 | Yeni sistemler content'e bağlı değil | PC'de Dialogue/DialogueUI yok, hiçbir aktörde `RPGSaveableActor` yok, Dialogue/Faction/Economy UI WBP'leri yok. `DA_Faction_Village` 16 Ekim log'unda "Faction Tag is empty" verdi. **Editörde yapılacak iş** |
 | 14 | 🟡 | `BP_ThirdPersonCharacter`'da `RPGCraftingUIComponent` | PC için yazılmış; karakterde etkisiz (PC'de zaten var). Blueprint'ten silinmeli |
 | 15 | 🟡 | Global GameMode | `BP_ThirdPersonGameMode` PlayerState atamıyor; L_Sandbox dışındaki haritada Progression/Reputation olmaz. Project Settings → Maps & Modes'ta `BP_GameMode` seçilebilir |
