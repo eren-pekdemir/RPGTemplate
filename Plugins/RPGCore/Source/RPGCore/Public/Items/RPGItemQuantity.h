@@ -20,10 +20,11 @@ struct RPGCORE_API FRPGItemQuantity
 	{
 	}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	// SaveGame: written when a saved component holds item quantities (e.g. a craft in progress).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Item")
 	TObjectPtr<const URPGItemDefinition> Item;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", meta = (ClampMin = "1"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Item", meta = (ClampMin = "1"))
 	int32 Quantity = 1;
 
 	bool IsValid() const { return Item != nullptr && Quantity > 0; }

@@ -164,6 +164,19 @@ bool URPGProgressionComponent::IsSkillUnlocked(const URPGSkillDefinition* Skill)
 
 void URPGProgressionComponent::HandlePawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
+    // A pawn we leave alive (mount, possession switch) must not keep our level and skill bonuses.
+    if (OldPawn && OldPawn != NewPawn)
+    {
+        if (IRPGStatReceiver* OldStats = URPGCoreStatics::FindStatReceiver(OldPawn))
+        {
+            OldStats->SetStatModifiers(this, TArray<FRPGStatModifier>());
+        }
+        if (IRPGTagReceiver* OldTags = URPGCoreStatics::FindTagReceiver(OldPawn))
+        {
+            OldTags->SetGrantedTags(this, FGameplayTagContainer());
+        }
+    }
+
     PushToTarget();
 }
 void URPGProgressionComponent::PushToTarget()

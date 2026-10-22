@@ -176,6 +176,15 @@ AActor* URPGReputationComponent::GetTargetActor() const
 
 void URPGReputationComponent::HandlePawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
+	// A pawn we leave alive (mount, possession switch) must not keep our rank tags.
+	if (OldPawn && OldPawn != NewPawn)
+	{
+		if (IRPGTagReceiver* OldReceiver = URPGCoreStatics::FindTagReceiver(OldPawn))
+		{
+			OldReceiver->SetGrantedTags(this, FGameplayTagContainer());
+		}
+	}
+
 	// A respawned pawn starts without our tags.
 	PushRankTags();
 }

@@ -10,6 +10,9 @@
 #include "RPGFaction.h"
 #include "RPGFactionSettings.h"
 
+// Cheats: not in Shipping builds (same as rpg.Loot.Simulate).
+#if !UE_BUILD_SHIPPING
+
 namespace
 {
 	URPGReputationComponent* FindPlayerReputation(UWorld* World)
@@ -68,3 +71,5 @@ namespace
 			}
 		}));
 }
+
+#endif // !UE_BUILD_SHIPPING
