@@ -73,8 +73,9 @@ int32 URPGInventoryComponent::ComputeAddableQuantity(const URPGItemDefinition* I
 
 	if (bUseWeight && !bAllowOverweight && UnitWeight > 0.f)
 	{
+		// Small tolerance: float sums like 0.3 / 0.1 come out as 2.9999 and must still fit 3 units.
 		const float RemainingWeight = MaxWeight - CurrentWeight;
-		WeightLimit = FMath::Max(0, FMath::FloorToInt(RemainingWeight / UnitWeight));
+		WeightLimit = FMath::Max(0, FMath::FloorToInt(RemainingWeight / UnitWeight + KINDA_SMALL_NUMBER));
 	}
 	
 	int32 SlotLimit = 0;

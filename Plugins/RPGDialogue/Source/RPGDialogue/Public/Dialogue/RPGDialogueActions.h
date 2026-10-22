@@ -35,7 +35,10 @@ public:
 	virtual void Execute(const FRPGDialogueContext& Context) const override;
 };
 
-/** Gives (positive) or takes (negative) items. Items that do not fit are lost: check room with a condition if needed. */
+/**
+ * Gives (positive) or takes (negative) items. Items that do not fit are lost: check room with a condition if needed.
+ * Taking is all or nothing: if the player has fewer than asked, nothing is taken (guard with "Has Item").
+ */
 UCLASS(meta = (DisplayName = "Change Item"))
 class RPGDIALOGUE_API URPGDialogueAction_ChangeItem : public URPGDialogueAction
 {

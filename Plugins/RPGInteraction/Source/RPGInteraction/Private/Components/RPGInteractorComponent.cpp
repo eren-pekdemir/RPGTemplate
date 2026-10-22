@@ -70,13 +70,13 @@ void URPGInteractorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 void URPGInteractorComponent::ScanForInteractables()
 {
 	APawn* Pawn = Cast<APawn>(GetOwner());
-	if (!Pawn || !Pawn->IsLocallyControlled() || !Pawn->GetController())
+	if (!Pawn || !Pawn->IsLocallyControlled() || !Pawn->GetController() || !Detector)
 	{
-		return;
-	}
-
-	if (!Detector)
-	{
+		// Unpossessed (death, ragdoll, possession switch): drop the focus, or its highlight would stay on forever.
+		if (FocusedInteractable.IsValid())
+		{
+			SetFocus(nullptr);
+		}
 		return;
 	}
 

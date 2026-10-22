@@ -19,8 +19,15 @@ void URPGInventorySlotWidget::SetEntry(const FRPGItemEntry& Entry)
 	}
 	
 	EntryId = Entry.EntryId;
-	IconImage->SetBrushFromSoftTexture(Entry.Item->Icon);
-	IconImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+	if (!Entry.Item->Icon.IsNull())
+	{
+		IconImage->SetBrushFromSoftTexture(Entry.Item->Icon);
+		IconImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	else
+	{
+		IconImage->SetVisibility(ESlateVisibility::Hidden);   // no white square for items without an icon
+	}
 	
 	
 	if (QuantityText)

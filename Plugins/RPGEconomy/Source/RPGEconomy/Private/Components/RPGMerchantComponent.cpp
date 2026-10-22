@@ -185,7 +185,8 @@ void URPGMerchantComponent::RemoveFromStock(const URPGItemDefinition* Item, int3
 	Entry->Quantity -= Quantity;
 	if (Entry->Quantity <= 0)
 	{
-		Stock.RemoveAll([Item](const FRPGMerchantStockEntry& Other) { return Other.Item == Item; });
+		// Only this line: the same item may be listed again further down (RemoveAll would delete that stock too).
+		Stock.RemoveAt(static_cast<int32>(Entry - Stock.GetData()));
 	}
 
 	OnStockChanged.Broadcast();

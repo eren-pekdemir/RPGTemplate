@@ -19,7 +19,9 @@ UObject* URPGOverlapInteractionDetector::FindBestInteractable(const FRPGInteract
 	if (Query.InstigatorActor == nullptr) return nullptr;
 	const FVector Origin = Query.InstigatorActor->GetActorLocation();
 	const FVector Forward = Query.InstigatorActor->GetActorForwardVector().GetSafeNormal2D();
-	const float CosMaxAngle = FMath::Cos(FMath::DegreesToRadians(MaxAngle));
+	if (SearchRadius <= 0.f) return nullptr;
+	// Below 1 degree, (1 - CosMaxAngle) in the angle score would be (almost) zero.
+	const float CosMaxAngle = FMath::Cos(FMath::DegreesToRadians(FMath::Clamp(MaxAngle, 1.f, 180.f)));
 	
 	FCollisionQueryParams CollisionParameters(SCENE_QUERY_STAT(RPGInteractionOverlap), false);
 	CollisionParameters.AddIgnoredActor(Query.InstigatorActor);

@@ -29,12 +29,13 @@ void URPGInteractableComponent::Interact_Implementation(AActor* InteractionInsti
 {
 	if (IRPGInteractable::Execute_CanInteract(this, InteractionInstigator))
 	{
-		OnInteracted.Broadcast(InteractionInstigator);
-		
+		// State first: a listener may re-enable the object (or check whether it is still usable).
 		if (bSingleUse)
 		{
 			SetInteractionEnabled(false);
 		}
+
+		OnInteracted.Broadcast(InteractionInstigator);
 	}
 }
 
