@@ -100,7 +100,9 @@ bool URPGLootComponent::TryRollLoot(TArray<FRPGLootDrop>& OutDrops)
     // State first: even an empty roll counts as "looted".
     bHasLooted = true;
 
-    FRandomStream Stream(FMath::Rand());
+    // GenerateNewSeed, not FMath::Rand(): Rand() only returns 0..32767 on Windows (32768 possible loot sequences).
+    FRandomStream Stream;
+    Stream.GenerateNewSeed();
     LootTable->Roll(Stream, OutDrops);
     return true;
 }

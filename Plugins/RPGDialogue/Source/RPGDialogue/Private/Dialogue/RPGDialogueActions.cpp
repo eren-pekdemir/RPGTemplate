@@ -35,9 +35,15 @@ void URPGDialogueAction_ChangeItem::Execute(const FRPGDialogueContext& Context) 
 			UE_LOG(LogRPGDialogue, Warning, TEXT("Change Item: only %d of %d %s fitted."), Added, Quantity, *GetNameSafe(Item));
 		}
 	}
-	else
+	else if (Container->HasItem(Item, -Quantity))
 	{
 		Container->RemoveItem(Item, -Quantity);
+	}
+	else
+	{
+		// All or nothing, like currency: "hand over 5 pelts" must not take 3 and carry on.
+		UE_LOG(LogRPGDialogue, Warning, TEXT("Change Item: the player does not have %d %s; nothing was taken."),
+			-Quantity, *GetNameSafe(Item));
 	}
 }
 

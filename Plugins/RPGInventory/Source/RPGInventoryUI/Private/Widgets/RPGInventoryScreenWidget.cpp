@@ -37,13 +37,7 @@ void URPGInventoryScreenWidget::SetFilter(FGameplayTag NewFilter)
 
 void URPGInventoryScreenWidget::NativeDestruct()
 {
-	if (WeightBar && WeightText)
-	{
-		WeightBar->SetVisibility(ESlateVisibility::Collapsed);
-		WeightText->SetVisibility(ESlateVisibility::Collapsed);
-	}
-
-	SetInventory(nullptr);
+	SetInventory(nullptr);   // also collapses the weight widgets
 	
 	Super::NativeDestruct();
 }
@@ -62,43 +56,35 @@ void URPGInventoryScreenWidget::HandleWeightChanged(float NewWeight, float MaxWe
 
 void URPGInventoryScreenWidget::UpdateWeight(float Current, float Max)
 {
-	if (!WeightBar || !WeightText) return;
-	if (!Inventory.Get() || !Inventory->bUseWeight)
-	{
-		WeightBar->SetVisibility(ESlateVisibility::Collapsed);
-		WeightText->SetVisibility(ESlateVisibility::Collapsed);
-		return;
-	}
-	
-	WeightBar->SetVisibility(ESlateVisibility::HitTestInvisible);
-	WeightText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	
-	if (Max > 0)
-	{
-		WeightBar->SetPercent(Current/Max);
-	}
-	else
-	{
-		WeightBar->SetPercent(0);
-	}
-	
-	if (Current > Max)
-	{
-		WeightBar->SetFillColorAndOpacity(OverweightColor);
-	}
-	else
-	{
-		WeightBar->SetFillColorAndOpacity(NormalColor);
-	}
-	
-	FNumberFormattingOptions Options;
-	Options.SetMaximumFractionalDigits(1);
+	// Both widgets are optional and independent: a screen may have only the bar or only the text.
+	const bool bShow = Inventory.Get() && Inventory->bUseWeight;
+	const ESlateVisibility WeightVisibility = bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed;
 
-	WeightText->SetText(FText::Format(
-		LOCTEXT("WeightFormat", "{0} / {1} kg"),
-		FText::AsNumber(Current, &Options),
-		FText::AsNumber(Max, &Options)));
-	
+	if (WeightBar)
+	{
+		WeightBar->SetVisibility(WeightVisibility);
+		if (bShow)
+		{
+			WeightBar->SetPercent(Max > 0 ? Current / Max : 0.f);
+			WeightBar->SetFillColorAndOpacity(Current > Max ? OverweightColor : NormalColor);
+		}
+	}
+
+	if (WeightText)
+	{
+		WeightText->SetVisibility(WeightVisibility);
+		if (bShow)
+		{
+			FNumberFormattingOptions Options;
+			Options.SetMaximumFractionalDigits(1);
+
+			WeightText->SetText(FText::Format(
+				LOCTEXT("WeightFormat", "{0} / {1} kg"),
+				FText::AsNumber(Current, &Options),
+				FText::AsNumber(Max, &Options)));
+		}
+	}
+
 }
 
 void URPGInventoryScreenWidget::HandleEntryActivated(const FRPGItemEntry& Entry)

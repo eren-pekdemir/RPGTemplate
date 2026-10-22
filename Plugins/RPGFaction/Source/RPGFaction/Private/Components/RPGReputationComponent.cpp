@@ -19,14 +19,7 @@ void URPGReputationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Starting values for factions the player has never met.
-	for (const URPGFactionDefinition* Faction : URPGFactionSettings::GetAllFactions())
-	{
-		if (Faction->FactionTag.IsValid() && !Reputation.Contains(Faction->FactionTag))
-		{
-			Reputation.Add(Faction->FactionTag, Faction->StartingReputation);
-		}
-	}
+	AddMissingFactions();
 
 	if (APlayerState* PlayerState = Cast<APlayerState>(GetOwner()))
 	{
@@ -214,8 +207,23 @@ void URPGReputationComponent::PushRankTags()
 
 // ===================================================================== Save
 
+void URPGReputationComponent::AddMissingFactions()
+{
+	// Starting values for factions the player has never met.
+	for (const URPGFactionDefinition* Faction : URPGFactionSettings::GetAllFactions())
+	{
+		if (Faction->FactionTag.IsValid() && !Reputation.Contains(Faction->FactionTag))
+		{
+			Reputation.Add(Faction->FactionTag, Faction->StartingReputation);
+		}
+	}
+}
+
 void URPGReputationComponent::OnLoadedFromSave()
 {
+	// The map was replaced by the save: factions added to the project after it was made get their start values
+	// again, otherwise their rank tags would never reach the pawn.
+	AddMissingFactions();
 	PushRankTags();
 
 	for (const TPair<FGameplayTag, int32>& Pair : Reputation)

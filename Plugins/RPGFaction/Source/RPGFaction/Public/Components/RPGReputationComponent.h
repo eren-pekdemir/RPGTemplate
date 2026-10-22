@@ -80,6 +80,9 @@ private:
 	/** Sends the current rank tags of every faction to the pawn. */
 	void PushRankTags();
 
+	/** Adds the starting reputation of every faction that is not in the map yet. */
+	void AddMissingFactions();
+
 	AActor* GetTargetActor() const;
 
 	UFUNCTION()

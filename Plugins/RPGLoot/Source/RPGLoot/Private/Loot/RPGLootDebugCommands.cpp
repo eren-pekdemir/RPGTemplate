@@ -47,7 +47,9 @@ namespace RPGLootDebug
         }
 
         const int32 Count = Args.Num() > 1 ? FMath::Clamp(FCString::Atoi(*Args[1]), 1, 1000000) : 10000;
-        const int32 Seed = Args.Num() > 2 ? FCString::Atoi(*Args[2]) : FMath::Rand();
+        FRandomStream SeedSource;
+        SeedSource.GenerateNewSeed();
+        const int32 Seed = Args.Num() > 2 ? FCString::Atoi(*Args[2]) : SeedSource.GetInitialSeed();
 
         struct FItemStats
         {

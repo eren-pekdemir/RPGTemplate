@@ -13,7 +13,11 @@
 
 TArray<FRPGLootDrop> URPGLootTable::RollLoot(int32 Seed) const
 {
-    FRandomStream Stream(Seed >= 0 ? Seed : FMath::Rand());
+    FRandomStream Stream(Seed);
+    if (Seed < 0)
+    {
+        Stream.GenerateNewSeed();   // full 32-bit seed (FMath::Rand() is only 15 bits on Windows)
+    }
     TArray<FRPGLootDrop> Drops;
     Roll(Stream, Drops);
     return Drops;

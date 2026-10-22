@@ -73,7 +73,10 @@ void URPGEquipmentPanelWidget::Refresh()
 	
 	if (!StatsText) return;
 	
-	const TMap<FGameplayTag, float> Stats = Equipment.IsValid() ? Equipment->GetAllStatModifiers() : TMap<FGameplayTag, float>();
+	TMap<FGameplayTag, float> Stats = Equipment.IsValid() ? Equipment->GetAllStatModifiers() : TMap<FGameplayTag, float>();
+
+	// TMap order is arbitrary and changes when items change: sort so the lines do not jump around.
+	Stats.KeySort([](const FGameplayTag& A, const FGameplayTag& B) { return A.ToString() < B.ToString(); });
 	
 	if (Stats.IsEmpty())
 	{

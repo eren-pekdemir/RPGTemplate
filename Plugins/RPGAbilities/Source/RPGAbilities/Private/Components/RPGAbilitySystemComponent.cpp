@@ -6,6 +6,7 @@
 #include "GameplayEffect.h"
 #include "AttributeSet.h"
 #include "Abilities/RPGGameplayAbility.h"
+#include "Misc/ScopeExit.h"
 
 
 URPGAbilitySystemComponent::URPGAbilitySystemComponent()
@@ -16,19 +17,27 @@ URPGAbilitySystemComponent::URPGAbilitySystemComponent()
 
 void URPGAbilitySystemComponent::SetStatModifiers(const UObject* Source, const TArray<FRPGStatModifier>& Modifiers)
 {
+	// The new snapshot is applied BEFORE the old one is removed. Removing first would drop MaxHealth for a moment,
+	// clamp Health down to it, and the health would not come back when the same bonus is re-applied.
 	FActiveGameplayEffectHandle OldHandle;
-	if (StatModifierHandles.RemoveAndCopyValue(Source, OldHandle))
+	const bool bHadOld = StatModifierHandles.RemoveAndCopyValue(Source, OldHandle);
+
+	ON_SCOPE_EXIT
 	{
-		RemoveActiveGameplayEffect(OldHandle);
-	}
+		if (bHadOld)
+		{
+			RemoveActiveGameplayEffect(OldHandle);
+		}
+	};
+
 	if (Modifiers.IsEmpty()) return;
-	
+
 	if (!StatModifierEffect)
 	{
 		UE_LOG(LogRPGAbilities, Warning, TEXT("%s: StatModifierEffect is not set, stat modifiers ignored"),*GetNameSafe(GetOwner()));
 		return;
 	}
-	
+
 	FGameplayEffectContextHandle Context = MakeEffectContext();
 	Context.AddSourceObject(Source);
 	FGameplayEffectSpecHandle SpecHandle =MakeOutgoingSpec(StatModifierEffect, 1.f, Context);
@@ -100,16 +109,18 @@ void URPGAbilitySystemComponent::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void URPGAbilitySystemComponent::SetGrantedTags(const UObject* Source, const FGameplayTagContainer& Tags)
 {
+	// Add the new snapshot before removing the old one (loose tags are counted): a tag present in both
+	// never drops to zero, so effects and abilities that depend on it are not switched off and on again.
 	FGameplayTagContainer OldTags;
-	if (GrantedTagsBySource.RemoveAndCopyValue(Source, OldTags))
+	GrantedTagsBySource.RemoveAndCopyValue(Source, OldTags);
+
+	if (!Tags.IsEmpty())
 	{
-		RemoveLooseGameplayTags(OldTags);
+		AddLooseGameplayTags(Tags);
+		GrantedTagsBySource.Add(Source, Tags);
 	}
-	
-	if (Tags.IsEmpty()) return;
-	
-	AddLooseGameplayTags(Tags);
-	GrantedTagsBySource.Add(Source, Tags);
+
+	RemoveLooseGameplayTags(OldTags);
 }
 
 void URPGAbilitySystemComponent::BeginPlay()

@@ -19,10 +19,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Overlap")
 	TEnumAsByte<ECollisionChannel>	OverlapChannel = ECC_Visibility;
 	
-	UPROPERTY(EditAnywhere, Category = "Overlap")
+	UPROPERTY(EditAnywhere, Category = "Overlap", meta = (ClampMin = "1", Units = "cm"))
 	float SearchRadius = 200.f;
-	
-	UPROPERTY(EditAnywhere, Category = "Overlap")
+
+	/** Half-angle of the cone in front of the character, in degrees. */
+	UPROPERTY(EditAnywhere, Category = "Overlap", meta = (ClampMin = "1", ClampMax = "180", Units = "deg"))
 	float MaxAngle = 70.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Overlap")

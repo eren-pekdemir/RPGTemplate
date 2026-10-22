@@ -47,26 +47,30 @@ void URPGCraftingUIComponent::HandlePossessedPawnChanged(APawn* OldPawn, APawn* 
 
 void URPGCraftingUIComponent::BindToPawn(APawn* Pawn)
 {
+	URPGCraftingComponent* NewCrafting = Pawn ? Pawn->FindComponentByClass<URPGCraftingComponent>() : nullptr;
+	if (NewCrafting == Crafting)
+	{
+		return;
+	}
+
+	// Close while Crafting is still the OLD component: closing leaves its station (and stops a craft that needs it).
+	// Closing after the swap left the old pawn "using" the forge forever.
+	if (bIsOpen)
+	{
+		CloseCrafting();
+	}
+
 	// Unbind -> assign -> bind
 	if (Crafting)
 	{
 		Crafting->OnActiveStationChanged.RemoveDynamic(this, &ThisClass::HandleActiveStationChanged);
 	}
 
-	Crafting = Pawn ? Pawn->FindComponentByClass<URPGCraftingComponent>() : nullptr;
+	Crafting = NewCrafting;
 
 	if (Crafting)
 	{
 		Crafting->OnActiveStationChanged.AddDynamic(this, &ThisClass::HandleActiveStationChanged);
-	}
-	else if (bIsOpen)
-	{
-		CloseCrafting();   // new pawn cannot craft
-	}
-
-	if (bIsOpen && ScreenWidget)
-	{
-		ScreenWidget->SetCrafting(Crafting);
 	}
 }
 

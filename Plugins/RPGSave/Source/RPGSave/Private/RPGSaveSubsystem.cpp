@@ -173,6 +173,11 @@ bool URPGSaveSubsystem::SaveToSlot(const FString& SlotName)
 			Save->bHasPlayerTransform = true;
 			Save->PlayerTransform = Pawn->GetActorTransform();
 		}
+		else
+		{
+			// Not refused (a death screen may autosave), but the pawn's inventory, equipment and crafting are missing.
+			UE_LOG(LogRPGSave, Warning, TEXT("SaveToSlot '%s': the player has no pawn; its components are not saved."), *SlotName);
+		}
 	}
 
 	TArray<FSaveTarget> Targets;
