@@ -15,3 +15,9 @@ Plugins/*/Intermediate/
 *.DotSettings.user
 .DS_Store
 Thumbs.db
+
+# EngineWire MCP config (capability token icerir)
+.mcp.json
+
+# EngineWire MCP plugini (yerel arac, repoya girmez)
+Plugins/EngineWire/
