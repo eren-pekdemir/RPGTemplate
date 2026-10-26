@@ -5,6 +5,7 @@
 #include "RPGInventoryTypes.h"
 #include "Items/RPGInventoryFragment.h"
 #include "Items/RPGItemDefinition.h"
+#include "Items/RPGItemQuantity.h"
 #include "RPGInventory.h"
 #include "Actors/RPGItemPickup.h"
 
@@ -217,6 +218,30 @@ int32 URPGInventoryComponent::RemoveItem(const URPGItemDefinition* Item, int32 Q
 	}
 	
 	return Quantity - ToRemove;
+}
+
+void URPGInventoryComponent::GetItems(TArray<FRPGItemQuantity>& OutItems) const
+{
+	OutItems.Reset();
+
+	for (const FRPGItemEntry& Entry : GetEntries())
+	{
+		if (!Entry.Item || Entry.Quantity <= 0)
+		{
+			continue;
+		}
+
+		// One line per item type: stacks of the same item are summed.
+		if (FRPGItemQuantity* Existing = OutItems.FindByPredicate(
+				[&Entry](const FRPGItemQuantity& Other) { return Other.Item == Entry.Item; }))
+		{
+			Existing->Quantity += Entry.Quantity;
+		}
+		else
+		{
+			OutItems.Emplace(Entry.Item, Entry.Quantity);
+		}
+	}
 }
 
 const TArray<FRPGItemEntry>& URPGInventoryComponent::GetEntries() const

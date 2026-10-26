@@ -10,6 +10,7 @@
 #include "RPGItemContainer.generated.h"
 
 class URPGItemDefinition;
+struct FRPGItemQuantity;
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class URPGItemContainer : public UInterface
@@ -33,6 +34,9 @@ public:
 
 	/** Removes up to Quantity. Returns the amount actually removed. */
 	virtual int32 RemoveItem(const URPGItemDefinition* Item, int32 Quantity) = 0;
+
+	/** Every item type held, one line per type (stacks summed). Used by the trade screen's sell list. */
+	virtual void GetItems(TArray<FRPGItemQuantity>& OutItems) const = 0;
 
 	bool HasItem(const URPGItemDefinition* Item, int32 Quantity = 1) const
 	{

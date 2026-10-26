@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "RPG Economy",
-	"Description": "Currencies, wallets, item values, merchants and currency rewards.",
+	"Description": "Currencies, wallets, item values, merchants, currency rewards and the trade screen.",
 	"Category": "RPG Template",
 	"CreatedBy": "Eren Pekdemir",
 	"CanContainContent": false,
@@ -11,7 +11,8 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
-		{ "Name": "RPGEconomy", "Type": "Runtime", "LoadingPhase": "Default" }
+		{ "Name": "RPGEconomy",   "Type": "Runtime", "LoadingPhase": "Default" },
+		{ "Name": "RPGEconomyUI", "Type": "Runtime", "LoadingPhase": "Default" }
 	],
 	"Plugins": [
 		{ "Name": "RPGCore", "Enabled": true }
