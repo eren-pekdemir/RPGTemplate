@@ -61,6 +61,7 @@ public:
 	virtual bool  CanAddItem(const URPGItemDefinition* Item, int32 Quantity) const override;
 	virtual int32 AddItem(const URPGItemDefinition* Item, int32 Quantity) override;
 	virtual int32 RemoveItem(const URPGItemDefinition* Item, int32 Quantity) override;
+	virtual void  GetItems(TArray<FRPGItemQuantity>& OutItems) const override;
 	
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	const TArray<FRPGItemEntry>& GetEntries() const;

@@ -24,11 +24,6 @@
 			"Name": "RPGProgressionUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{ 
-			"Name": "RPGProgressionUI", 
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
