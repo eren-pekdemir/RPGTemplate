@@ -198,7 +198,7 @@ weapon and every target because the numbers come from attributes, not from the e
 | Property | Description |
 |---|---|
 | `AttackMontage` | Optional. If set, the hit happens when the montage sends `HitEventTag`; if empty, after `HitDelay` |
-| `HitEventTag` | Default `Event.Melee.Hit` (sent by an AnimNotify on the montage) |
+| `HitEventTag` | Default `Event.Melee.Hit` (sent by a `Gameplay Event` notify on the montage, see below) |
 | `DamageEffect`, `BaseDamage` | Usually `GE_Damage`; `BaseDamage` is passed as `SetByCaller.Damage` |
 | `TraceRange`, `TraceRadius`, `HitObjectTypes` | Sphere sweep in front of the avatar |
 | `bDrawDebug` | Draws the sweep |
@@ -209,6 +209,12 @@ dead targets are skipped → end when the montage completes or is interrupted.
 
 The native `ActivateAbility` deliberately does **not** call `Super`: the base implementation commits the ability
 itself when there is no Blueprint graph, which would apply cost and cooldown twice.
+
+### `URPGAnimNotify_GameplayEvent` (C++ notify, "Gameplay Event")
+
+Sends `EventTag` (default `Event.Melee.Hit`) to the owning actor as a gameplay event, with the owner as instigator.
+Place it on the frame where the blade passes the target; the montage timeline shows the tag as the notify name.
+Owners without an ability system (the montage editor preview) are skipped, so previewing does not log errors.
 
 ### `GA_Dodge` (Blueprint example)
 
@@ -322,8 +328,6 @@ the value itself does not change.
 - Current values (`Health`, `Stamina`) reset on respawn because the ASC lives on the pawn. Level and skill bonuses
   are re-applied by Progression (on the PlayerState); Save / Load will restore the rest.
 - No revive: `URPGHealthComponent` does not clear `State.Dead`.
-- The melee attack uses a delay until an attack animation is added (the montage path and the `Event.Melee.Hit`
-  notify are supported; the notify class is not written yet).
 - No hit reactions, damage numbers, gameplay cues (sound / VFX) or enemy health bars yet.
 - The clamp logic is duplicated in `URPGHealthSet` and `URPGStaminaSet`; a third "value / max" set should move it
   into `URPGAttributeSet`.
