@@ -39,17 +39,12 @@ void URPGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDa
 	{
 		float Damage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
-		float DamagedHealthValue = Health.GetCurrentValue() - Damage; 
-		if (DamagedHealthValue > 0)
-		{
-			SetHealth(DamagedHealthValue);
-		}
-		else
-		{
-			DamageInstigator = Data.EffectSpec.GetContext().GetOriginalInstigator();
-			SetHealth(0.f);
-			DamageInstigator.Reset();
-		}
+		float DamagedHealthValue = Health.GetCurrentValue() - Damage;
+
+		// SetHealth reaches the health delegate without mod data: keep the instigator for every hit, not only the lethal one.
+		DamageInstigator = Data.EffectSpec.GetContext().GetOriginalInstigator();
+		SetHealth(FMath::Max(DamagedHealthValue, 0.f));
+		DamageInstigator.Reset();
 	}
 }
 
