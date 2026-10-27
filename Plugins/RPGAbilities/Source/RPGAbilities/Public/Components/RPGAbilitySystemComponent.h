@@ -41,8 +41,15 @@ public:
 	UFUNCTION(BlueprintCallable) 
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	
-	UFUNCTION() 
+	UFUNCTION()
 	virtual void SetGrantedTags(const UObject* Source, const FGameplayTagContainer& Tags) override;
+
+	/**
+	 * Adds a loose tag and removes it after Duration seconds (e.g. State.Invulnerable for roll i-frames).
+	 * Loose tags are counted, so overlapping calls keep the tag until the last one expires.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "RPG|Abilities")
+	void AddLooseTagForDuration(FGameplayTag Tag, float Duration);
 
 protected:
 	// Called when the game starts

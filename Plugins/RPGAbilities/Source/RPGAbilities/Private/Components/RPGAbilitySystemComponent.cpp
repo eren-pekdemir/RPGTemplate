@@ -7,6 +7,7 @@
 #include "AttributeSet.h"
 #include "Abilities/RPGGameplayAbility.h"
 #include "Misc/ScopeExit.h"
+#include "TimerManager.h"
 
 
 URPGAbilitySystemComponent::URPGAbilitySystemComponent()
@@ -67,6 +68,23 @@ void URPGAbilitySystemComponent::SetStatModifiers(const UObject* Source, const T
 	
 	FActiveGameplayEffectHandle ActiveHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	StatModifierHandles.Add(Source, ActiveHandle);
+}
+
+void URPGAbilitySystemComponent::AddLooseTagForDuration(FGameplayTag Tag, float Duration)
+{
+	if (!Tag.IsValid() || Duration <= 0.f) return;
+
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	AddLooseGameplayTag(Tag);
+
+	// Weak lambda: the timer does nothing if the component is gone (owner destroyed mid-roll).
+	FTimerHandle Handle;
+	World->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateWeakLambda(this, [this, Tag]()
+	{
+		RemoveLooseGameplayTag(Tag);
+	}), Duration, false);
 }
 
 void URPGAbilitySystemComponent::AbilityInputTagPressed(FGameplayTag InputTag)

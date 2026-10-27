@@ -19,4 +19,7 @@ namespace RPGTags
 	RPGABILITIES_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Melee_Hit);
 	
 	RPGABILITIES_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Dodge);
+
+	/** While present, melee hits skip the owner (roll i-frames). */
+	RPGABILITIES_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Invulnerable);
 }
