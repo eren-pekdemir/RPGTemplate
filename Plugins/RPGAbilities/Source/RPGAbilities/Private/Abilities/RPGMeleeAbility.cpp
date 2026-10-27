@@ -118,6 +118,7 @@ void URPGMeleeAbility::PerformHit()
         if (!TargetASC) continue;   // walls, props: no ASC, no damage
 
         if (TargetASC->HasMatchingGameplayTag(RPGTags::State_Dead)) continue;   // skip this one, keep checking others
+        if (TargetASC->HasMatchingGameplayTag(RPGTags::State_Invulnerable)) continue;   // rolling: i-frames
 
         FGameplayEffectSpecHandle Spec = MakeOutgoingGameplayEffectSpec(DamageEffect, GetAbilityLevel());
         if (!Spec.IsValid()) continue;

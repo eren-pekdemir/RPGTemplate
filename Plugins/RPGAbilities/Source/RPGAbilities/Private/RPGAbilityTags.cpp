@@ -16,4 +16,7 @@ namespace RPGTags
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_Dodge, "Cooldown.Dodge",
 	"Cooldown dodge tag.");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Invulnerable, "State.Invulnerable",
+		"Roll i-frames: melee hits skip the owner while present.");
 }

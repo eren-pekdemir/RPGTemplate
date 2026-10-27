@@ -204,8 +204,8 @@ weapon and every target because the numbers come from attributes, not from the e
 | `bDrawDebug` | Draws the sweep |
 
 Flow: `CommitAbility` → wait for the hit event (registered **before** the montage starts) and play the montage, or
-wait `HitDelay` → sweep → each actor is damaged **once** (capsule and mesh hits are merged), actors without an ASC and
-dead targets are skipped → end when the montage completes or is interrupted.
+wait `HitDelay` → sweep → each actor is damaged **once** (capsule and mesh hits are merged), actors without an ASC,
+dead targets and targets with `State.Invulnerable` are skipped → end when the montage completes or is interrupted.
 
 The native `ActivateAbility` deliberately does **not** call `Super`: the base implementation commits the ability
 itself when there is no Blueprint graph, which would apply cost and cooldown twice.
@@ -225,6 +225,9 @@ Launches the character in the movement-input direction (or forward when standing
 | Cost | `GE_DodgeCost`: instant, `Stamina -25` |
 | Cooldown | `GE_DodgeCooldown`: 1 s duration, grants `Cooldown.Dodge` |
 | Requires | `Skill.Dodge` (*Activation Required Tags*), granted by the Dodge skill in [Progression](Progression.md) |
+
+After committing, it calls `AddLooseTagForDuration(State.Invulnerable, 0.35)` on the ability system: for the first
+0.35 s of the roll, melee hits skip the character.
 
 GAS checks both before activation: with less than 25 stamina, or while `Cooldown.Dodge` is present, the ability
 simply does not start. Blueprint abilities must call **Commit Ability** themselves, and every execution path must end
@@ -301,6 +304,7 @@ the value itself does not change.
 | `InputTag.Attack`, `InputTag.Dodge` | RPGAbilities | Input → ability routing |
 | `Event.Melee.Hit` | RPGAbilities | Montage hit frame |
 | `Cooldown.Dodge` | RPGAbilities | Granted by the dodge cooldown effect |
+| `State.Invulnerable` | RPGAbilities | Roll i-frames: melee hits skip the owner. Given by `AddLooseTagForDuration` on the ASC (`GA_Dodge`, 0.35 s) |
 | `Skill.Dodge` | Project settings | Required by `GA_Dodge` (*Activation Required Tags*); granted by the Dodge skill |
 
 ---
