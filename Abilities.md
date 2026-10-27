@@ -210,6 +210,16 @@ dead targets and targets with `State.Invulnerable` are skipped → end when the 
 The native `ActivateAbility` deliberately does **not** call `Super`: the base implementation commits the ability
 itself when there is no Blueprint graph, which would apply cost and cooldown twice.
 
+### `URPGCombatLibrary` (soft targeting)
+
+| Function | Description |
+|---|---|
+| `FindMeleeTarget(Attacker, Radius = 350, MaxAngle = 70)` | Nearest pawn with an ability system that is not `State.Dead`, inside the radius and within `MaxAngle` of the attacker's facing (2D) |
+| `FaceMeleeTarget(Attacker, Radius, MaxAngle)` | Turns the attacker (yaw only) toward that target, or toward the last movement input when there is none. Returns whether a target was found |
+
+There is no lock-on: the player character calls `FaceMeleeTarget` right before each swing, so attacks land on the
+nearest enemy in front. Any living combatant counts; a faction check can narrow it once enemies exist.
+
 ### `URPGAnimNotify_GameplayEvent` (C++ notify, "Gameplay Event")
 
 Sends `EventTag` (default `Event.Melee.Hit`) to the owning actor as a gameplay event, with the owner as instigator.
@@ -228,6 +238,10 @@ Launches the character in the movement-input direction (or forward when standing
 
 After committing, it calls `AddLooseTagForDuration(State.Invulnerable, 0.35)` on the ability system: for the first
 0.35 s of the roll, melee hits skip the character.
+
+Before launching it turns the character to face the roll direction (`SetActorRotation` from that direction) and, when
+the avatar is the showcase hero (`BP_Hero`), calls `ResetCombo`, so a roll cancels the attack chain. The launch is
+still `Launch Character`: the hero pack has no roll animation yet, so there is no roll montage.
 
 GAS checks both before activation: with less than 25 stamina, or while `Cooldown.Dodge` is present, the ability
 simply does not start. Blueprint abilities must call **Commit Ability** themselves, and every execution path must end
