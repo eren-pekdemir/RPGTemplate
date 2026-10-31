@@ -24,6 +24,7 @@
 		},
 		{ "Name": "RPGFaction",  "Enabled": true },
 		{ "Name": "RPGDialogue", "Enabled": true },
-		{ "Name": "RPGSave",     "Enabled": true }
+		{ "Name": "RPGSave",     "Enabled": true },
+		{ "Name": "SunPosition", "Enabled": true }
 	]
 }

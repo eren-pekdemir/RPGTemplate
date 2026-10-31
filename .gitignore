@@ -21,3 +21,9 @@ Thumbs.db
 
 # EngineWire MCP plugini (yerel arac, repoya girmez)
 Plugins/EngineWire/
+
+# Fab: Medieval Village (Marco Maria Rossi) - Fab Standard lisans, 3.6 GB; ham asset repoya girmez
+Content/MedievalVillage/
+
+# Ham kaynak sanat (Poly Haven FBX/doku, ~300 MB); import edilmis asset Content altinda
+SourceArt/
