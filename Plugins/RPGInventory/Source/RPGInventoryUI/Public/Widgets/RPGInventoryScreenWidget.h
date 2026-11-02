@@ -47,13 +47,13 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory|Screen")
 	FRPGOnEntryActivatedSignature OnEntryActivated; 
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Screen", meta = (BindWidget))
 	TObjectPtr<URPGInventoryGridWidget> InventoryGrid;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Screen", meta = (BindWidgetOptional))
 	TObjectPtr<UProgressBar> WeightBar;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Screen", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> WeightText;
 	
 	virtual void NativeDestruct() override;

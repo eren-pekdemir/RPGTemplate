@@ -32,7 +32,7 @@ public:
 	FGameplayTag GetFilter() const ; 
 
 protected:                                      
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Grid", meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel> SlotGrid;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory|Grid")

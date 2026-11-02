@@ -49,10 +49,10 @@ public:
 	
 protected:
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Slot", meta = (BindWidget))
 	TObjectPtr<UImage> IconImage;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Slot", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> QuantityText;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "RPG|Inventory", meta = (BindWidgetOptional))

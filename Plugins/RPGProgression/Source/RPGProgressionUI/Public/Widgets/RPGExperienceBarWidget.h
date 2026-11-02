@@ -20,15 +20,15 @@ public:
 	void SetProgression(URPGProgressionComponent* NewProgression);
 
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Progression", meta = (BindWidget))
 	TObjectPtr<UProgressBar> ExperienceBar;
 
 	/** "Lv 5" */
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Progression", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> LevelText;
 
 	/** "40 / 225" */
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Progression", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ExperienceText;
 
 	/** Designer hook: level-up flash, sound. */

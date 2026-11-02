@@ -22,7 +22,7 @@ public:
 	void SetInventory(URPGInventoryComponent* NewInventory);
 
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "RPG|Notification", meta = (BindWidget))
 	TObjectPtr<UVerticalBox> EntryBox;
 
 	UPROPERTY(EditDefaultsOnly, Category = "RPG|Notification")

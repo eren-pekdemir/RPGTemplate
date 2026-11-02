@@ -28,15 +28,15 @@ public:
 	
 	virtual void SetTooltipItem_Implementation(const URPGItemDefinition* Item, int32 Quantity) override;
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Tooltip", meta = (BindWidget))
 	TObjectPtr<UTextBlock> NameText;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Tooltip", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> DescriptionText;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Tooltip", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> WeightText;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory|Tooltip", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> RarityText;
 };

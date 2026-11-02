@@ -42,7 +42,7 @@ public:
 	
 	
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Equipment", meta = (BindWidget))
 	TObjectPtr<UImage> IconImage;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "RPG|Equipment", meta = (BindWidgetOptional))

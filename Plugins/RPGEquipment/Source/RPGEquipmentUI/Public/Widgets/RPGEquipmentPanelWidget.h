@@ -27,7 +27,7 @@ public:
 	
 protected:
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Equipment", meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> StatsText;
 	
 	virtual void NativeOnInitialized() override;

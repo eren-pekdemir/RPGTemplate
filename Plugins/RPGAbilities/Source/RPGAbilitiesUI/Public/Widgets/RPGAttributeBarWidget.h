@@ -43,10 +43,10 @@ protected:
     UPROPERTY(EditAnywhere, Category = "RPG|Attribute Bar")
     bool bAutoBindToOwningPawn = true;
 
-    UPROPERTY(meta = (BindWidget))
+    UPROPERTY(BlueprintReadOnly, Category = "RPG|Attribute Bar", meta = (BindWidget))
     TObjectPtr<UProgressBar> Bar;
 
-    UPROPERTY(meta = (BindWidgetOptional))
+    UPROPERTY(BlueprintReadOnly, Category = "RPG|Attribute Bar", meta = (BindWidgetOptional))
     TObjectPtr<UTextBlock> ValueText;
 
     /** For designer effects (flash on damage, colour when low). */

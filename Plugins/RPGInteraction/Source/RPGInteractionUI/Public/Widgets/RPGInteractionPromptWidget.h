@@ -50,10 +50,10 @@ private:
 	bool bSuppressed = false;
 	
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, Category = "Prompt", meta = (BindWidget))
 	TObjectPtr<UTextBlock> PromptText;
 	
-	UPROPERTY(meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Category = "Prompt", meta = (BindWidgetOptional))
 	TObjectPtr<UProgressBar> HoldProgressBar;
 	
 	UPROPERTY(EditAnywhere, Category = "Prompt")
