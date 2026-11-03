@@ -36,6 +36,7 @@ wooden_axe, wooden_hammer_01, wooden_candlestick, tree_stump_01, wooden_bucket_0
 | T_UI_SlotHead | Visored helm | Lorc | https://game-icons.net/1x1/lorc/visored-helm.html |
 | T_UI_SlotChest | Breastplate | Lorc | https://game-icons.net/1x1/lorc/breastplate.html |
 | T_UI_SlotWeapon | Broadsword | Lorc | https://game-icons.net/1x1/lorc/broadsword.html |
+| T_UI_SaveIcon | Quill ink | Lorc | https://game-icons.net/1x1/lorc/quill-ink.html |
 
 ## Kenney (CC0, https://creativecommons.org/publicdomain/zero/1.0/)
 
