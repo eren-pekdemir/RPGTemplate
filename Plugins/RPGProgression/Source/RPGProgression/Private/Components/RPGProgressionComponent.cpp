@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// RPGProgressionComponent.cpp
 
 #include "Components/RPGProgressionComponent.h"
 

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// RPGTemplate.cpp
 
 #include "RPGTemplate.h"
 #include "Modules/ModuleManager.h"

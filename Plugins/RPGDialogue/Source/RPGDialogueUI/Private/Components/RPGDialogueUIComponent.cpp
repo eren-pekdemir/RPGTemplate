@@ -1,6 +1,7 @@
 // RPGDialogueUIComponent.cpp
 
 #include "Components/RPGDialogueUIComponent.h"
+#include "RPGDialogue.h"
 
 #include "Components/RPGDialogueComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -23,7 +24,7 @@ void URPGDialogueUIComponent::BeginPlay()
 	Dialogue = GetOwner() ? GetOwner()->FindComponentByClass<URPGDialogueComponent>() : nullptr;
 	if (!Dialogue)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DialogueUI: %s has no RPGDialogueComponent. Put both on the PlayerController."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogRPGDialogue, Warning, TEXT("DialogueUI: %s has no RPGDialogueComponent. Put both on the PlayerController."), *GetNameSafe(GetOwner()));
 		return;
 	}
 
@@ -69,13 +70,13 @@ void URPGDialogueUIComponent::OpenScreen()
 	APlayerController* PlayerController = GetPlayerController();
 	if (!PlayerController || !PlayerController->IsLocalController())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DialogueUI: owner is not a local PlayerController (%s)."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogRPGDialogue, Warning, TEXT("DialogueUI: owner is not a local PlayerController (%s)."), *GetNameSafe(GetOwner()));
 		return;
 	}
 
 	if (!ScreenWidgetClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DialogueUI: ScreenWidgetClass is not set."));
+		UE_LOG(LogRPGDialogue, Warning, TEXT("DialogueUI: ScreenWidgetClass is not set."));
 		return;
 	}
 

@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "RPG|Dialogue")
 	FSlateColor UnavailableColor = FSlateColor(FLinearColor(0.45f, 0.45f, 0.45f, 1.f));
 
+	/** Where the answer sits inside its button. Answers read like a list, so left by default. */
+	UPROPERTY(EditDefaultsOnly, Category = "RPG|Dialogue")
+	TEnumAsByte<EHorizontalAlignment> ContentAlignment = HAlign_Left;
+
 	/** For styling (e.g. a lock icon on unavailable choices). */
 	UFUNCTION(BlueprintImplementableEvent, Category = "RPG|Dialogue")
 	void BP_OnSetup(const FRPGDialogueChoiceView& InView);

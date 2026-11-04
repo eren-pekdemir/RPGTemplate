@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGHealthComponent.cpp
 
 #include "Components/RPGHealthComponent.h"
 #include "AbilitySystemComponent.h"
@@ -72,7 +71,6 @@ void URPGHealthComponent::HandleDeath(AActor* Killer)
 }
 
 
-// Called when the game starts
 void URPGHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();

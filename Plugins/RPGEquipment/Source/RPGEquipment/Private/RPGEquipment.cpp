@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// RPGEquipment.cpp
 
 #include "RPGEquipment.h"
 

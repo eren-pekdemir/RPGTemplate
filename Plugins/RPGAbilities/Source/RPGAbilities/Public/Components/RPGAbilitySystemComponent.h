@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// RPGAbilitySystemComponent.h
 
 #pragma once
 
@@ -17,7 +17,6 @@ class RPGABILITIES_API URPGAbilitySystemComponent : public UAbilitySystemCompone
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	URPGAbilitySystemComponent();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RPG|Abilities")
@@ -52,7 +51,6 @@ public:
 	void AddLooseTagForDuration(FGameplayTag Tag, float Duration);
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 	
 	virtual void InitializeComponent() override;

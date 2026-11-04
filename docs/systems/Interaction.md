@@ -77,6 +77,7 @@ Lives on the player pawn. Owns focus tracking and the hold-to-interact state mac
 | `GetFocusedInteractable()`, `IsHolding()`, `GetHoldProgress()` | Read-only state for UI and other systems |
 | `OnFocusChanged(New, Old)` | Fired only when focus actually changes |
 | `OnHoldStarted(Target, Duration)` / `OnHoldEnded(Target, bCompleted)` | Hold lifecycle |
+| `GetFocusPrompt()` / `OnPromptChanged(NewPrompt)` | Cached prompt of the focus; re-read every scan and broadcast only when the text changes (e.g. `Pick up Arrow x12` → `Inventory Full`) |
 
 **Hold state machine**
 
@@ -173,8 +174,11 @@ graph LR
   - Positioned every frame by projecting the focused actor's bounds top to the screen
   - Hidden with render opacity when off-screen (a collapsed widget would stop ticking and never come back)
   - Designer hooks: `BP_OnPromptShown`, `BP_OnPromptHidden`, `BP_OnHoldEnded(bCompleted)`
-- Events (`OnFocusChanged`, `OnHold*`) are **pushed** by delegates; hold progress is **pulled** each frame
-  with `GetHoldProgress()`.
+- Events (`OnFocusChanged`, `OnPromptChanged`, `OnHold*`) are **pushed** by delegates; hold progress is **pulled**
+  each frame with `GetHoldProgress()`. The widget reads the prompt text only from the Interactor, never from the
+  interactable directly.
+- `SetPromptSuppressed(bool)` on the prompt component hides the prompt (e.g. while a menu is open) and re-syncs with
+  the current focus when released.
 
 ---
 

@@ -1,12 +1,14 @@
 // RPGDialogueScreenWidget.cpp
 
 #include "Widgets/RPGDialogueScreenWidget.h"
+#include "RPGDialogue.h"
 
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/RPGDialogueComponent.h"
 #include "Components/TextBlock.h"
+#include "Components/VerticalBoxSlot.h"
 #include "Engine/Texture2D.h"
 #include "InputCoreTypes.h"
 #include "Widgets/RPGDialogueChoiceWidget.h"
@@ -98,7 +100,7 @@ void URPGDialogueScreenWidget::RebuildChoices()
 	const TArray<FRPGDialogueChoiceView> Choices = Dialogue ? Dialogue->GetChoices() : TArray<FRPGDialogueChoiceView>();
 	if (!Choices.IsEmpty() && !ChoiceClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DialogueScreen: ChoiceClass is not set, answers cannot be shown."));
+		UE_LOG(LogRPGDialogue, Warning, TEXT("DialogueScreen: ChoiceClass is not set, answers cannot be shown."));
 		return;
 	}
 
@@ -107,7 +109,12 @@ void URPGDialogueScreenWidget::RebuildChoices()
 		URPGDialogueChoiceWidget* ChoiceWidget = CreateWidget<URPGDialogueChoiceWidget>(this, ChoiceClass);
 		ChoiceWidget->Setup(View, RowToChoiceIndex.Num() + 1);
 		ChoiceWidget->OnChoiceClicked.AddDynamic(this, &ThisClass::HandleChoiceClicked);
-		ChoiceList->AddChild(ChoiceWidget);
+		UPanelSlot* RowSlot = ChoiceList->AddChild(ChoiceWidget);
+		// Rows span the list, so every answer starts at the same left edge.
+		if (UVerticalBoxSlot* BoxSlot = Cast<UVerticalBoxSlot>(RowSlot))
+		{
+			BoxSlot->SetHorizontalAlignment(HAlign_Fill);
+		}
 		RowToChoiceIndex.Add(View.Index);
 	}
 }

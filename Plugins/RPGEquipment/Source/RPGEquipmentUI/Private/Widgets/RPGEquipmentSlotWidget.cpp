@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGEquipmentSlotWidget.cpp
 
 #include "Widgets/RPGEquipmentSlotWidget.h"
 #include "Items/RPGItemDefinition.h"

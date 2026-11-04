@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGEquipmentComponent.cpp
 
 #include "Components/RPGEquipmentComponent.h"
 
@@ -25,7 +24,6 @@ URPGEquipmentComponent::URPGEquipmentComponent()
 	AvailableSlots.AddTag(RPGTags::Equipment_Slot_Feet);
 }
 
-// Called when the game starts
 void URPGEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -56,7 +54,8 @@ void URPGEquipmentComponent::SetSlotItem(FGameplayTag Slot, const URPGItemDefini
 {
 	if (!HasSlot(Slot))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Available slots has no slot"));
+		UE_LOG(LogRPGEquipment, Warning, TEXT("%s: slot %s is not in AvailableSlots."),
+			*GetNameSafe(GetOwner()), *Slot.ToString());
 		return;
 	}
 	
@@ -79,8 +78,8 @@ void URPGEquipmentComponent::SetSlotItem(FGameplayTag Slot, const URPGItemDefini
 
 void URPGEquipmentComponent::PushStatModifiers()
 {
-	IRPGStatReceiver* StatReciever = URPGCoreStatics::FindStatReceiver(GetOwner());
-	if (!StatReciever) return;
+	IRPGStatReceiver* StatReceiver = URPGCoreStatics::FindStatReceiver(GetOwner());
+	if (!StatReceiver) return;
 	
 	TArray<FRPGStatModifier> Modifiers;
 	
@@ -91,7 +90,7 @@ void URPGEquipmentComponent::PushStatModifiers()
 		NewModifier.Value = Pair.Value;
 	}
 	
-	StatReciever->SetStatModifiers(this, Modifiers);
+	StatReceiver->SetStatModifiers(this, Modifiers);
 }
 
 const URPGItemDefinition* URPGEquipmentComponent::GetEquippedItem(FGameplayTag Slot) const

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// RPGTemplateEditor.Target.cs
 
 using UnrealBuildTool;
 using System.Collections.Generic;

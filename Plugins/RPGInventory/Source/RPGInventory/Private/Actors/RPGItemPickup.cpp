@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGItemPickup.cpp
 
 #include "Actors/RPGItemPickup.h"
 #include "RPGCoreStatics.h"

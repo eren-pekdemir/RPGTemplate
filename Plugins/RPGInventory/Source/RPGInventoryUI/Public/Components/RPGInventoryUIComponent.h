@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// RPGInventoryUIComponent.h
 
 #pragma once
 
@@ -19,7 +19,6 @@ class RPGINVENTORYUI_API URPGInventoryUIComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	URPGInventoryUIComponent();
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory|UI")
@@ -53,7 +52,6 @@ private:
 	TObjectPtr<APlayerController> PC;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	

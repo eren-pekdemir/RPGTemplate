@@ -1,6 +1,7 @@
 // RPGCraftingUIComponent.cpp
 
 #include "Components/RPGCraftingUIComponent.h"
+#include "RPGCrafting.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Components/RPGCraftingComponent.h"
@@ -97,13 +98,13 @@ void URPGCraftingUIComponent::OpenCrafting()
 	APlayerController* PlayerController = GetPlayerController();
 	if (!PlayerController || !PlayerController->IsLocalController())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CraftingUI: owner is not a local PlayerController (%s)."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogRPGCrafting, Warning, TEXT("CraftingUI: owner is not a local PlayerController (%s)."), *GetNameSafe(GetOwner()));
 		return;
 	}
 
 	if (!ScreenWidgetClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CraftingUI: ScreenWidgetClass is not set on %s."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogRPGCrafting, Warning, TEXT("CraftingUI: ScreenWidgetClass is not set on %s."), *GetNameSafe(GetOwner()));
 		return;
 	}
 
@@ -115,7 +116,7 @@ void URPGCraftingUIComponent::OpenCrafting()
 
 	if (!Crafting)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CraftingUI: pawn %s has no RPGCraftingComponent."), *GetNameSafe(PlayerController->GetPawn()));
+		UE_LOG(LogRPGCrafting, Warning, TEXT("CraftingUI: pawn %s has no RPGCraftingComponent."), *GetNameSafe(PlayerController->GetPawn()));
 		return;
 	}
 

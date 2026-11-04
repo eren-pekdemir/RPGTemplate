@@ -1,3 +1,4 @@
+# --- Unreal build output and caches (regenerated on build / editor start) ---
 Binaries/
 Intermediate/
 DerivedDataCache/
@@ -5,25 +6,39 @@ Saved/
 Build/
 Plugins/*/Binaries/
 Plugins/*/Intermediate/
+
+# --- IDE and OS files ---
 .vs/
 .idea/
+.vscode/
 *.sln
 *.suo
 *.VC.db
 *.VC.opendb
-.vscode/
 *.DotSettings.user
 .DS_Store
 Thumbs.db
 
-# EngineWire MCP config (capability token icerir)
+# --- Local tooling ---
+# EngineWire MCP editor plugin and its config (the config holds a capability token)
+Plugins/EngineWire/
 .mcp.json
 
-# EngineWire MCP plugini (yerel arac, repoya girmez)
-Plugins/EngineWire/
-
-# Fab: Medieval Village (Marco Maria Rossi) - Fab Standard lisans, 3.6 GB; ham asset repoya girmez
+# --- Third-party Fab packs (Fab Standard License: raw assets may not be redistributed) ---
+# Get them from Fab and add them to Content/ yourself; README.md lists which ones and where they go.
+Content/Dark_Knight/
+Content/Assassin/
 Content/MedievalVillage/
+Content/DynamicFalling/
 
-# Ham kaynak sanat (Poly Haven FBX/doku, ~300 MB); import edilmis asset Content altinda
+# --- Per-user editor content ---
+Content/Developers/
+Content/Collections/
+
+# --- Raw source art (Poly Haven / Sketchfab FBX and textures); the imported assets live under Content/ ---
 SourceArt/
+
+# --- Personal scratch files ---
+Rehber_v3_Faz4_Guncelleme.md
+Content/Showcase/Abilities/Effects/GE_Damage.uasset
+Content/Showcase/FX/Sounds/NewSoundCue.uasset

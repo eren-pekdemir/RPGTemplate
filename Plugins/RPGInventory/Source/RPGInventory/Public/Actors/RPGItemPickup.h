@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// RPGItemPickup.h
 
 #pragma once
 
@@ -19,7 +19,6 @@ class RPGINVENTORY_API ARPGItemPickup : public AActor, public IRPGInteractable, 
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ARPGItemPickup();
 	
 	

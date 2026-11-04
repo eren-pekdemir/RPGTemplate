@@ -1,7 +1,7 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGEquipmentVisualsComponent.cpp
 
 #include "Components/RPGEquipmentVisualsComponent.h"
+#include "RPGEquipment.h"
 
 #include "Components/RPGEquipmentComponent.h"
 #include "Items/RPGEquipmentFragment.h"
@@ -16,7 +16,6 @@ URPGEquipmentVisualsComponent::URPGEquipmentVisualsComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-// Called when the game starts
 void URPGEquipmentVisualsComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -24,7 +23,7 @@ void URPGEquipmentVisualsComponent::BeginPlay()
 	Equipment = GetOwner()->FindComponentByClass<URPGEquipmentComponent>();
 	if (!Equipment.Get())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("No equipment component in the owner"));
+		UE_LOG(LogRPGEquipment,Warning, TEXT("No equipment component in the owner"));
 		return;
 	}
 	

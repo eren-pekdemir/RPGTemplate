@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// RPGAbilities.cpp
 
 #include "RPGAbilities.h"
 

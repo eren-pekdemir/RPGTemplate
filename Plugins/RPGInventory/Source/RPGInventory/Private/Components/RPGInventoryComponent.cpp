@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGInventoryComponent.cpp
 
 #include "Components/RPGInventoryComponent.h"
 #include "RPGInventoryTypes.h"
@@ -26,7 +25,6 @@ URPGInventoryComponent::URPGInventoryComponent()
 }
 
 
-// Called when the game starts
 void URPGInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -336,7 +334,7 @@ int32 URPGInventoryComponent::DropEntry(FGuid EntryId, int32 Quantity)
 	
 	if (!PickupClass)
 	{
-		UE_LOG(LogTemp,Warning, TEXT("Pickup Class is null"));
+		UE_LOG(LogRPGInventory,Warning, TEXT("%s: PickupClass is not set, the entry cannot be dropped."), *GetNameSafe(GetOwner()));
 		return 0;
 	}
 	

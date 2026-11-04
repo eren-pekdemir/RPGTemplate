@@ -1,7 +1,7 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGInventoryUIComponent.cpp
 
 #include "Components/RPGInventoryUIComponent.h"
+#include "RPGInventory.h"
 #include "Components/RPGInventoryComponent.h"
 #include "Widgets/RPGInventoryScreenWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -22,7 +22,7 @@ void URPGInventoryUIComponent::BeginPlay()
 	
 	if (!ScreenWidgetClass)
 	{
-		UE_LOG(LogTemp,Warning, TEXT("Screen Widget Class is null"));
+		UE_LOG(LogRPGInventory,Warning, TEXT("Screen Widget Class is null"));
 		return;
 	}
 	

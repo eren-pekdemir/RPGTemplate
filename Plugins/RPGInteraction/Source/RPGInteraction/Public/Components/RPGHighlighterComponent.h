@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// RPGHighlighterComponent.h
 
 #pragma once
 
@@ -15,7 +15,6 @@ class RPGINTERACTION_API URPGHighlighterComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	URPGHighlighterComponent();
 	
 	UPROPERTY(EditAnywhere, Category = "Highlight")
@@ -25,7 +24,6 @@ public:
 	ERPGHighlightStyle DefaultStyle = ERPGHighlightStyle::Default;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	

@@ -1,10 +1,8 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+// RPGInteractableComponent.cpp
 
 #include "Components/RPGInteractableComponent.h"
 
 
-// Sets default values for this component's properties
 URPGInteractableComponent::URPGInteractableComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;

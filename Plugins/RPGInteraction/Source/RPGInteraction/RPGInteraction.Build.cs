@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// RPGInteraction.Build.cs
 
 using UnrealBuildTool;
 
